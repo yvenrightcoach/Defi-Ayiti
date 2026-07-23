@@ -8,7 +8,7 @@
   }
 
   body {
-    @apply font-body bg-haiti-blue/5 text-slate-800;
+    @apply font-body bg-haiti-blueLight text-slate-800;
     /* Evite le bounce/zoom disgracieux sur mobile en mode PWA installee */
     overscroll-behavior-y: none;
     -webkit-tap-highlight-color: transparent;
@@ -22,20 +22,73 @@
 }
 
 @layer components {
+  /*
+   * Style "bouton 3D" a la Duolingo : une bordure basse pleine (pas un
+   * flou) qui donne un effet de relief, et qui s'aplatit + le bouton
+   * descend au clic pour simuler une vraie pression physique.
+   */
   .btn-game {
-    @apply inline-flex items-center justify-center rounded-pill px-6 py-3 font-display text-lg
-      shadow-card transition-transform active:scale-95;
+    @apply inline-flex select-none items-center justify-center gap-2 rounded-2xl px-6 py-3
+      font-display text-lg font-bold tracking-wide transition-all duration-100 ease-out
+      active:translate-y-[4px] disabled:pointer-events-none disabled:opacity-50
+      disabled:active:translate-y-0;
   }
 
   .btn-game-primary {
-    @apply btn-game bg-haiti-yellow text-haiti-blue hover:shadow-card-hover;
+    @apply btn-game bg-haiti-yellow text-haiti-blue
+      shadow-[0_5px_0_0_theme(colors.haiti.yellowDark)]
+      hover:brightness-105
+      active:shadow-[0_1px_0_0_theme(colors.haiti.yellowDark)]
+      disabled:shadow-[0_5px_0_0_theme(colors.haiti.yellowDark)];
   }
 
   .btn-game-secondary {
-    @apply btn-game bg-haiti-blue text-white hover:shadow-card-hover;
+    @apply btn-game bg-haiti-blue text-white
+      shadow-[0_5px_0_0_theme(colors.haiti.blueDark)]
+      hover:brightness-110
+      active:shadow-[0_1px_0_0_theme(colors.haiti.blueDark)]
+      disabled:shadow-[0_5px_0_0_theme(colors.haiti.blueDark)];
   }
 
+  .btn-game-outline {
+    @apply btn-game border-2 border-haiti-blue/15 bg-white text-haiti-blue
+      shadow-[0_5px_0_0_theme(colors.haiti.blueLight)]
+      hover:bg-haiti-blueLight
+      active:shadow-[0_1px_0_0_theme(colors.haiti.blueLight)];
+  }
+
+  /* Carte generique : coins tres arrondis, bordure fine, ombre douce. */
   .card-game {
-    @apply rounded-card bg-white p-4 shadow-card;
+    @apply rounded-card border-2 border-slate-100 bg-white p-4 shadow-card;
+  }
+
+  /* Tuile de raccourci cliquable (grille d'accueil) : meme logique 3D que
+     les boutons, mais en carre colore avec icone. Une classe par couleur
+     de marque car Tailwind ne peut pas generer un box-shadow dynamique a
+     partir d'une valeur JS. */
+  .tile-game {
+    @apply flex flex-col items-center justify-center gap-1 rounded-card p-6 text-white
+      transition-all duration-100 ease-out
+      active:translate-y-[4px];
+  }
+
+  .tile-game-blue {
+    @apply tile-game bg-haiti-blue shadow-[0_5px_0_0_theme(colors.haiti.blueDark)]
+      active:shadow-[0_1px_0_0_theme(colors.haiti.blueDark)];
+  }
+
+  .tile-game-green {
+    @apply tile-game bg-haiti-green shadow-[0_5px_0_0_theme(colors.haiti.greenDark)]
+      active:shadow-[0_1px_0_0_theme(colors.haiti.greenDark)];
+  }
+
+  .tile-game-red {
+    @apply tile-game bg-haiti-red shadow-[0_5px_0_0_theme(colors.haiti.redDark)]
+      active:shadow-[0_1px_0_0_theme(colors.haiti.redDark)];
+  }
+
+  .tile-game-yellow {
+    @apply tile-game bg-haiti-yellow text-haiti-blue shadow-[0_5px_0_0_theme(colors.haiti.yellowDark)]
+      active:shadow-[0_1px_0_0_theme(colors.haiti.yellowDark)];
   }
 }

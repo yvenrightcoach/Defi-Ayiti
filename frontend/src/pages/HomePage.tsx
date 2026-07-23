@@ -8,12 +8,12 @@ import { useAuthStore } from "@/store/authStore";
 import { useProfileStore } from "@/store/profileStore";
 
 const QUICK_LINKS = [
-  { to: "/aventure", label: "Mode Aventure", icon: "🗺️", color: "bg-haiti-blue" },
-  { to: "/quiz", label: "Quiz rapide", icon: "❓", color: "bg-haiti-green" },
-  { to: "/battle", label: "Battle", icon: "⚔️", color: "bg-haiti-red" },
-  { to: "/heros", label: "Mes heros", icon: "🎖️", color: "bg-haiti-yellow text-haiti-blue" },
-  { to: "/amis", label: "Amis", icon: "🤝", color: "bg-haiti-blue" },
-  { to: "/classements", label: "Classements", icon: "🏆", color: "bg-haiti-green" },
+  { to: "/aventure", label: "Mode Aventure", icon: "🗺️", tile: "tile-game-blue" },
+  { to: "/quiz", label: "Quiz rapide", icon: "❓", tile: "tile-game-green" },
+  { to: "/battle", label: "Battle", icon: "⚔️", tile: "tile-game-red" },
+  { to: "/heros", label: "Mes heros", icon: "🎖️", tile: "tile-game-yellow" },
+  { to: "/amis", label: "Amis", icon: "🤝", tile: "tile-game-blue" },
+  { to: "/classements", label: "Classements", icon: "🏆", tile: "tile-game-green" },
 ];
 
 export default function HomePage() {
@@ -67,15 +67,18 @@ export default function HomePage() {
       </motion.section>
 
       <div className="grid grid-cols-2 gap-3">
-        {QUICK_LINKS.map((link) => (
-          <Link
+        {QUICK_LINKS.map((link, index) => (
+          <motion.div
             key={link.to}
-            to={link.to}
-            className={`${link.color} flex flex-col items-center justify-center gap-1 rounded-card p-6 text-white shadow-card transition-transform active:scale-95`}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.05 }}
           >
-            <span className="text-3xl">{link.icon}</span>
-            <span className="font-display">{link.label}</span>
-          </Link>
+            <Link to={link.to} className={link.tile}>
+              <span className="text-3xl">{link.icon}</span>
+              <span className="font-display">{link.label}</span>
+            </Link>
+          </motion.div>
         ))}
       </div>
     </div>

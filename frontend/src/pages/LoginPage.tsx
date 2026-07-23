@@ -5,6 +5,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { emailLogin, emailRegister, guestLogin } from "@/services/endpoints/auth";
 import { getErrorMessage } from "@/lib/errors";
 import { useAuthStore } from "@/store/authStore";
+import Mascot from "@/components/ui/Mascot";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -95,16 +96,31 @@ export default function LoginPage() {
   }
 
   return (
-    <section className="flex min-h-screen flex-col items-center justify-center gap-6 bg-haiti-blue p-6 text-white">
+    <section className="relative flex min-h-screen flex-col items-center justify-center gap-6 overflow-hidden bg-gradient-to-b from-haiti-blue to-haiti-blueDark p-6 text-white">
+      {/* Bulles decoratives en fond, style "aire de jeu" */}
+      <div className="pointer-events-none absolute -left-12 -top-12 h-40 w-40 rounded-full bg-haiti-yellow/20 blur-2xl" />
+      <div className="pointer-events-none absolute -right-16 top-16 h-56 w-56 rounded-full bg-haiti-red/20 blur-2xl" />
+      <div className="pointer-events-none absolute bottom-0 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-haiti-green/10 blur-3xl" />
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.5, y: -20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "backOut" }}
+        className="relative z-10 w-full max-w-sm text-center"
+      >
+        <Mascot className="mx-auto h-32 w-32 animate-float drop-shadow-xl" />
+        <h1 className="mt-1 text-center font-display text-4xl font-extrabold drop-shadow-sm">Defi Ayiti</h1>
+        <p className="mt-1 text-center font-display text-lg text-haiti-yellow">
+          Connecte-toi pour commencer l'aventure
+        </p>
+      </motion.div>
+
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35 }}
-        className="w-full max-w-sm"
+        transition={{ duration: 0.35, delay: 0.15 }}
+        className="relative z-10 w-full max-w-sm"
       >
-        <h1 className="mb-1 text-center text-3xl font-display">Defi Ayiti</h1>
-        <p className="mb-6 text-center text-haiti-yellow">Connecte-toi pour commencer l'aventure</p>
-
         <button
           type="button"
           onClick={handleGuestLogin}

@@ -14,7 +14,7 @@ export default function AppLayout() {
   }
 
   return (
-    <div className="min-h-screen pb-16">
+    <div className="min-h-screen pb-24">
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.div
           key={location.pathname}
