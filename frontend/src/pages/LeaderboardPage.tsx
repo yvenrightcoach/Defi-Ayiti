@@ -52,7 +52,12 @@ export default function LeaderboardPage() {
 
   return (
     <section className="min-h-screen p-4">
-      <h1 className="mb-4 text-2xl font-display text-haiti-blue">Classements</h1>
+      <div className="mb-4 flex items-center gap-3">
+        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-haiti-green text-2xl shadow-card">
+          🏆
+        </span>
+        <h1 className="font-display text-2xl text-haiti-blue">Classements</h1>
+      </div>
 
       <div className="mb-3 flex gap-2 overflow-x-auto">
         {SCOPES.map((s) => (
@@ -60,8 +65,10 @@ export default function LeaderboardPage() {
             key={s.value}
             type="button"
             onClick={() => setScope(s.value)}
-            className={`whitespace-nowrap rounded-pill px-4 py-1.5 text-sm font-display ${
-              scope === s.value ? "bg-haiti-blue text-white" : "bg-white text-haiti-blue"
+            className={`whitespace-nowrap rounded-pill border-2 px-4 py-1.5 text-sm font-display transition-all duration-150 ${
+              scope === s.value
+                ? "border-haiti-blue bg-haiti-blue text-white"
+                : "border-slate-100 bg-white text-haiti-blue"
             }`}
           >
             {s.label}
@@ -74,8 +81,10 @@ export default function LeaderboardPage() {
             key={p.value}
             type="button"
             onClick={() => setPeriod(p.value)}
-            className={`whitespace-nowrap rounded-pill px-4 py-1.5 text-sm ${
-              period === p.value ? "bg-haiti-yellow text-haiti-blue" : "bg-white text-slate-500"
+            className={`whitespace-nowrap rounded-pill border-2 px-4 py-1.5 text-sm transition-all duration-150 ${
+              period === p.value
+                ? "border-haiti-yellow bg-haiti-yellow text-haiti-blue"
+                : "border-slate-100 bg-white text-slate-500"
             }`}
           >
             {p.label}
@@ -91,21 +100,32 @@ export default function LeaderboardPage() {
         <p className="text-center text-slate-500">Aucun classement disponible pour le moment.</p>
       ) : (
         <div className="space-y-2">
-          {entries.map((entry, index) => (
-            <motion.div
-              key={entry.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.02 }}
-              className={`card-game flex items-center gap-3 py-3 ${
-                entry.profile.id === profile?.id ? "ring-2 ring-haiti-yellow" : ""
-              }`}
-            >
-              <span className="w-8 text-center font-display text-haiti-blue">#{entry.rank}</span>
-              <span className="flex-1 truncate">{entry.profile.user.username}</span>
-              <span className="font-display text-haiti-blue">{entry.score} pts</span>
-            </motion.div>
-          ))}
+          {entries.map((entry, index) => {
+            const medal = entry.rank === 1 ? "🥇" : entry.rank === 2 ? "🥈" : entry.rank === 3 ? "🥉" : null;
+            return (
+              <motion.div
+                key={entry.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.02 }}
+                className={`card-game flex items-center gap-3 py-3 ${
+                  entry.profile.id === profile?.id ? "border-haiti-yellow ring-2 ring-haiti-yellow" : ""
+                } ${medal ? "bg-haiti-yellow/10" : ""}`}
+              >
+                <span
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-display ${
+                    medal ? "text-2xl" : "bg-haiti-blueLight text-haiti-blue"
+                  }`}
+                >
+                  {medal ?? `#${entry.rank}`}
+                </span>
+                <span className="flex-1 truncate font-display text-slate-700">{entry.profile.user.username}</span>
+                <span className="rounded-pill bg-haiti-blueLight px-2 py-1 font-display text-sm text-haiti-blue">
+                  {entry.score} pts
+                </span>
+              </motion.div>
+            );
+          })}
         </div>
       )}
     </section>

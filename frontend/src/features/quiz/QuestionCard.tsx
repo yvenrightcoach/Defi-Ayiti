@@ -29,18 +29,23 @@ export default function QuestionCard({ question, selectedIds, onToggle, result, 
       )}
 
       <div className="space-y-2">
-        {question.answers.map((answer) => {
+        {question.answers.map((answer, i) => {
           const isSelected = selectedIds.includes(answer.id);
           const isCorrectAnswer = result?.correct_answer_ids.includes(answer.id);
           const showResult = result !== null;
+          const letter = String.fromCharCode(65 + i);
 
-          let stateClasses = "border-slate-200 hover:border-haiti-blue";
+          let stateClasses = "border-slate-200 hover:border-haiti-blue hover:-translate-y-0.5";
+          let badgeClasses = "bg-slate-100 text-slate-500";
           if (showResult && isCorrectAnswer) {
             stateClasses = "border-haiti-green bg-haiti-green/10";
+            badgeClasses = "bg-haiti-green text-white";
           } else if (showResult && isSelected && !isCorrectAnswer) {
             stateClasses = "border-haiti-red bg-haiti-red/10";
+            badgeClasses = "bg-haiti-red text-white";
           } else if (isSelected) {
             stateClasses = "border-haiti-blue bg-haiti-blue/5";
+            badgeClasses = "bg-haiti-blue text-white";
           }
 
           return (
@@ -49,12 +54,16 @@ export default function QuestionCard({ question, selectedIds, onToggle, result, 
               type="button"
               disabled={showResult}
               onClick={() => onToggle(answer.id)}
-              className={`flex w-full items-center gap-2 rounded-card border-2 p-3 text-left transition-colors ${stateClasses}`}
+              className={`flex w-full items-center gap-3 rounded-card border-2 p-3 text-left font-display transition-all duration-150 active:translate-y-0 ${stateClasses}`}
             >
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-current text-xs">
-                {multiSelect ? (isSelected ? "✓" : "") : isSelected ? "●" : ""}
+              <span
+                className={`flex h-8 w-8 shrink-0 items-center justify-center text-sm transition-colors ${
+                  multiSelect ? "rounded-lg" : "rounded-full"
+                } ${badgeClasses}`}
+              >
+                {showResult && isCorrectAnswer ? "✓" : showResult && isSelected ? "✕" : letter}
               </span>
-              <span>{answer.text}</span>
+              <span className="text-slate-700">{answer.text}</span>
             </button>
           );
         })}

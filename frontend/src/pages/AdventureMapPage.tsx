@@ -38,8 +38,15 @@ export default function AdventureMapPage() {
 
   return (
     <section className="min-h-screen p-4">
-      <h1 className="mb-1 text-2xl font-display text-haiti-blue">Carte d'Haiti</h1>
-      <p className="mb-4 text-sm text-slate-500">Choisis un departement pour commencer ton aventure.</p>
+      <div className="mb-4 flex items-center gap-3">
+        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-haiti-blue text-2xl shadow-card">
+          🗺️
+        </span>
+        <div>
+          <h1 className="font-display text-2xl text-haiti-blue">Carte d'Haiti</h1>
+          <p className="text-sm text-slate-500">Choisis un departement pour commencer ton aventure.</p>
+        </div>
+      </div>
 
       <div className="grid grid-cols-2 gap-3">
         {departments.map((dept, index) => {
@@ -47,13 +54,13 @@ export default function AdventureMapPage() {
           return (
             <motion.div
               key={dept.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.03 }}
+              initial={{ opacity: 0, scale: 0.8, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ delay: index * 0.04, type: "spring", stiffness: 300, damping: 20 }}
             >
               <Link
                 to={`/aventure/${dept.id}`}
-                className="card-game flex flex-col items-center gap-1 py-5 text-center transition-transform active:scale-95"
+                className="card-game flex flex-col items-center gap-1 py-5 text-center transition-all duration-150 hover:-translate-y-1 hover:shadow-card-hover active:translate-y-0.5"
               >
                 <span className="text-3xl">🏝️</span>
                 <span className="font-display text-haiti-blue">{dept.name}</span>

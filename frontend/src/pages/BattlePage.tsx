@@ -193,7 +193,12 @@ export default function BattlePage() {
 
   return (
     <section className="min-h-screen p-4">
-      <h1 className="mb-4 text-2xl font-display text-haiti-blue">Battle</h1>
+      <div className="mb-4 flex items-center gap-3">
+        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-haiti-red text-2xl shadow-card">
+          ⚔️
+        </span>
+        <h1 className="font-display text-2xl text-haiti-blue">Battle</h1>
+      </div>
       {error && <ErrorMessage message={error} onRetry={() => setError(null)} />}
 
       {step === "lobby" && (
@@ -218,12 +223,19 @@ export default function BattlePage() {
       )}
 
       {step === "room" && room && (
-        <div className="card-game space-y-3 text-center">
+        <div className="card-game animate-bounce-in space-y-3 text-center">
           <p className="text-sm text-slate-500">Code de la salle</p>
-          <p className="text-3xl font-display tracking-widest text-haiti-blue">{room.room_code}</p>
-          <div className="space-y-1">
+          <p className="rounded-2xl bg-haiti-blueLight py-2 text-3xl font-display tracking-widest text-haiti-blue">
+            {room.room_code}
+          </p>
+          <div className="flex flex-wrap justify-center gap-2">
             {room.participants.map((p) => (
-              <p key={p.id}>👤 {p.user.username}</p>
+              <span
+                key={p.id}
+                className="flex items-center gap-1 rounded-pill bg-slate-100 px-3 py-1 text-sm font-display text-slate-600"
+              >
+                👤 {p.user.username}
+              </span>
             ))}
           </div>
           {isHost ? (
@@ -307,15 +319,24 @@ export default function BattlePage() {
       )}
 
       {step === "finished" && room?.matches?.length && (
-        <div className="card-game text-center">
-          <h2 className="text-xl font-display text-haiti-blue">Match termine !</h2>
+        <div className="card-game animate-bounce-in text-center">
+          <span className="text-4xl">🏆</span>
+          <h2 className="mt-1 text-xl font-display text-haiti-blue">Match termine !</h2>
           <div className="mt-3 space-y-2">
             {[...room.matches[room.matches.length - 1].participants]
               .sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99))
               .map((participant) => (
-                <p key={participant.id}>
-                  {participant.rank === 1 ? "🏆 " : ""}
-                  {participant.profile.user.username} — {participant.score} pts
+                <p
+                  key={participant.id}
+                  className={`flex items-center justify-between rounded-2xl px-3 py-2 font-display ${
+                    participant.rank === 1 ? "bg-haiti-yellow/30 text-haiti-blue" : "bg-slate-50 text-slate-600"
+                  }`}
+                >
+                  <span>
+                    {participant.rank === 1 ? "🏆 " : ""}
+                    {participant.profile.user.username}
+                  </span>
+                  <span>{participant.score} pts</span>
                 </p>
               ))}
           </div>

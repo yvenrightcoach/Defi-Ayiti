@@ -33,28 +33,49 @@ export default function HeroesPage() {
   if (error) return <ErrorMessage message={error} onRetry={load} />;
 
   const unlockedCount = heroes.filter((h) => h.is_unlocked).length;
+  const progressPercent = heroes.length ? Math.round((unlockedCount / heroes.length) * 100) : 0;
 
   return (
     <section className="min-h-screen p-4">
-      <h1 className="text-2xl font-display text-haiti-blue">Collection de heros</h1>
-      <p className="mb-4 text-sm text-slate-500">
+      <div className="mb-1 flex items-center gap-3">
+        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-haiti-yellow text-2xl shadow-card">
+          🎖️
+        </span>
+        <h1 className="font-display text-2xl text-haiti-blue">Collection de heros</h1>
+      </div>
+      <p className="mb-2 text-sm text-slate-500">
         {unlockedCount}/{heroes.length} heros debloques
       </p>
+      <div className="mb-4 h-3 overflow-hidden rounded-pill border-2 border-haiti-blue/10 bg-white">
+        <motion.div
+          className="h-full rounded-pill bg-haiti-yellow"
+          animate={{ width: `${progressPercent}%` }}
+          transition={{ type: "spring", stiffness: 200, damping: 25 }}
+        />
+      </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {heroes.map((hero, index) => (
           <motion.button
             key={hero.id}
             type="button"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.04 }}
+            initial={{ opacity: 0, y: 10, scale: 0.85 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: index * 0.04, type: "spring", stiffness: 300, damping: 20 }}
             onClick={() => hero.is_unlocked && setSelected(hero)}
-            className={`card-game flex flex-col items-center gap-1 py-4 text-center ${
-              hero.is_unlocked ? "active:scale-95" : "opacity-50 grayscale"
+            className={`card-game flex flex-col items-center gap-1 py-4 text-center transition-all duration-150 ${
+              hero.is_unlocked
+                ? "hover:-translate-y-1 hover:shadow-card-hover active:translate-y-0"
+                : "opacity-50 grayscale"
             }`}
           >
-            <span className="text-4xl">{hero.is_unlocked ? "🎖️" : "🔒"}</span>
+            <span
+              className={`flex h-14 w-14 items-center justify-center rounded-full text-3xl ${
+                hero.is_unlocked ? "bg-haiti-yellow/25" : "bg-slate-100"
+              }`}
+            >
+              {hero.is_unlocked ? "🎖️" : "🔒"}
+            </span>
             <span className="font-display text-sm text-haiti-blue">{hero.name}</span>
             <span className="text-xs capitalize text-slate-400">{hero.rarity}</span>
           </motion.button>

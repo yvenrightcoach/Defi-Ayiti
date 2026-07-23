@@ -84,7 +84,12 @@ export default function FriendsPage() {
 
   return (
     <section className="min-h-screen p-4">
-      <h1 className="mb-4 text-2xl font-display text-haiti-blue">Amis</h1>
+      <div className="mb-4 flex items-center gap-3">
+        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-haiti-blue text-2xl shadow-card">
+          🤝
+        </span>
+        <h1 className="font-display text-2xl text-haiti-blue">Amis</h1>
+      </div>
 
       <div className="mb-4 flex gap-2">
         {(
@@ -98,8 +103,10 @@ export default function FriendsPage() {
             key={value}
             type="button"
             onClick={() => setTab(value)}
-            className={`rounded-pill px-3 py-1.5 text-sm font-display ${
-              tab === value ? "bg-haiti-blue text-white" : "bg-white text-haiti-blue"
+            className={`rounded-pill border-2 px-3 py-1.5 text-sm font-display transition-all duration-150 ${
+              tab === value
+                ? "border-haiti-blue bg-haiti-blue text-white"
+                : "border-slate-100 bg-white text-haiti-blue"
             }`}
           >
             {label}
@@ -120,8 +127,15 @@ export default function FriendsPage() {
               {friends.length === 0 && <p className="text-slate-500">Aucun ami pour le moment.</p>}
               {friends.map((friend) => (
                 <div key={friend.id} className="card-game flex items-center justify-between py-3">
-                  <span>{friend.user.username}</span>
-                  <span className="text-sm text-slate-400">Niveau {friend.level}</span>
+                  <span className="flex items-center gap-2">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-haiti-blueLight font-display text-haiti-blue">
+                      {friend.user.username.charAt(0).toUpperCase()}
+                    </span>
+                    {friend.user.username}
+                  </span>
+                  <span className="rounded-pill bg-slate-100 px-2 py-1 text-sm text-slate-500">
+                    Niveau {friend.level}
+                  </span>
                 </div>
               ))}
             </div>
@@ -132,7 +146,12 @@ export default function FriendsPage() {
               {incomingRequests.length === 0 && <p className="text-slate-500">Aucune demande en attente.</p>}
               {incomingRequests.map((request) => (
                 <div key={request.id} className="card-game flex items-center justify-between py-3">
-                  <span>{request.requester.user.username}</span>
+                  <span className="flex items-center gap-2">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-haiti-blueLight font-display text-haiti-blue">
+                      {request.requester.user.username.charAt(0).toUpperCase()}
+                    </span>
+                    {request.requester.user.username}
+                  </span>
                   <div className="flex gap-2">
                     <button type="button" onClick={() => handleAccept(request.id)} className="btn-game-primary px-3 py-1 text-sm">
                       Accepter
@@ -169,7 +188,12 @@ export default function FriendsPage() {
                   .filter((p) => p.id !== profile?.id)
                   .map((result) => (
                     <div key={result.id} className="card-game flex items-center justify-between py-3">
-                      <span>{result.user.username}</span>
+                      <span className="flex items-center gap-2">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-haiti-blueLight font-display text-haiti-blue">
+                          {result.user.username.charAt(0).toUpperCase()}
+                        </span>
+                        {result.user.username}
+                      </span>
                       <button
                         type="button"
                         onClick={() => handleAdd(result.id)}

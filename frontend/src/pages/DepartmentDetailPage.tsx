@@ -49,11 +49,22 @@ export default function DepartmentDetailPage() {
 
   return (
     <section className="min-h-screen p-4">
-      <Link to="/aventure" className="mb-2 inline-block text-sm text-haiti-blue">
+      <Link
+        to="/aventure"
+        className="mb-3 inline-flex items-center gap-1 rounded-pill bg-white px-3 py-1.5 text-sm font-display text-haiti-blue shadow-card"
+      >
         ← Retour a la carte
       </Link>
-      <h1 className="text-2xl font-display text-haiti-blue">{department.name}</h1>
-      <p className="mb-4 text-sm text-slate-500">{department.description}</p>
+
+      <div className="mb-4 flex items-center gap-3">
+        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-haiti-blue text-2xl shadow-card">
+          🏝️
+        </span>
+        <div>
+          <h1 className="font-display text-2xl text-haiti-blue">{department.name}</h1>
+          <p className="text-sm text-slate-500">{department.description}</p>
+        </div>
+      </div>
 
       <div className="space-y-3">
         {levels.map((level, index) => {
@@ -67,11 +78,18 @@ export default function DepartmentDetailPage() {
               transition={{ delay: index * 0.05 }}
               disabled={!unlocked}
               onClick={() => navigate(`/quiz/level/${level.id}`)}
-              className={`card-game flex w-full items-center justify-between text-left transition-transform ${
-                unlocked ? "active:scale-95" : "opacity-50"
+              className={`card-game flex w-full items-center gap-3 text-left transition-all duration-150 ${
+                unlocked ? "hover:-translate-y-0.5 hover:shadow-card-hover active:translate-y-0" : "opacity-50"
               }`}
             >
-              <div>
+              <span
+                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl font-display text-lg ${
+                  unlocked ? "bg-haiti-blueLight text-haiti-blue" : "bg-slate-100 text-slate-400"
+                }`}
+              >
+                {level.is_boss_level ? "👑" : level.order}
+              </span>
+              <div className="flex-1">
                 <p className="font-display text-haiti-blue">
                   {level.is_boss_level ? "👑 " : ""}
                   Chapitre {level.order} : {level.name}

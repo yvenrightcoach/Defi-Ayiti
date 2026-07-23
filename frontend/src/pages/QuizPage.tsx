@@ -3,8 +3,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import Confetti from "react-confetti";
 import { useNavigate, useParams } from "react-router-dom";
 
+import AnimatedBackground from "@/components/ui/AnimatedBackground";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import Loader from "@/components/ui/Loader";
+import Mascot from "@/components/ui/Mascot";
 import QuestionCard from "@/features/quiz/QuestionCard";
 import { useCountUp } from "@/hooks/useCountUp";
 import { getErrorMessage } from "@/lib/errors";
@@ -123,16 +125,17 @@ export default function QuizPage() {
 
   return (
     <section className="min-h-screen p-4">
-      <div className="mb-3 flex items-center justify-between text-sm text-slate-500">
+      <div className="mb-2 flex items-center justify-between text-sm font-display text-slate-500">
         <span>
           Question {index + 1}/{questions.length}
         </span>
-        <span>{correctCount} bonnes reponses</span>
+        <span className="text-haiti-green">✓ {correctCount} bonnes reponses</span>
       </div>
-      <div className="mb-4 h-2 overflow-hidden rounded-pill bg-haiti-blue/10">
-        <div
-          className="h-full rounded-pill bg-haiti-blue transition-all"
-          style={{ width: `${((index + (result ? 1 : 0)) / questions.length) * 100}%` }}
+      <div className="mb-4 h-4 overflow-hidden rounded-pill border-2 border-haiti-blue/10 bg-white">
+        <motion.div
+          className="h-full rounded-pill bg-haiti-green"
+          animate={{ width: `${((index + (result ? 1 : 0)) / questions.length) * 100}%` }}
+          transition={{ type: "spring", stiffness: 200, damping: 25 }}
         />
       </div>
 
@@ -186,11 +189,18 @@ function FinishScreen({
   const coinDisplay = useCountUp(levelResult?.coin_awarded ?? 0);
 
   return (
-    <section className="flex min-h-screen flex-col items-center justify-center gap-4 bg-haiti-blue p-6 text-center text-white">
+    <section className="relative flex min-h-screen flex-col items-center justify-center gap-4 p-6 text-center text-white">
+      <AnimatedBackground variant="dark" />
       {(passed || heroUnlocked) && (
         <Confetti numberOfPieces={heroUnlocked ? 300 : 150} recycle={false} width={window.innerWidth} height={window.innerHeight} />
       )}
-      <motion.div initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="w-full max-w-sm">
+      <motion.div
+        initial={{ scale: 0.3, opacity: 0, y: 40 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 260, damping: 18 }}
+        className="relative z-10 w-full max-w-sm"
+      >
+        <Mascot className={`mx-auto h-24 w-24 drop-shadow-xl ${passed ? "animate-float" : ""}`} />
         <h1 className="text-3xl font-display">{passed ? "Bravo !" : "Presque !"}</h1>
         <p className="mt-2 text-haiti-yellow">
           {correctCount}/{total} bonnes reponses

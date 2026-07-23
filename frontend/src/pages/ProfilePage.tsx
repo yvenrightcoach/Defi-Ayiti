@@ -35,7 +35,7 @@ export default function ProfilePage() {
         animate={{ opacity: 1, y: 0 }}
         className="card-game flex flex-col items-center text-center"
       >
-        <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-haiti-blue/10 text-4xl">
+        <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 border-haiti-blueLight bg-haiti-blue/10 text-4xl shadow-card">
           {profile.avatar_url ? (
             <img src={profile.avatar_url} alt="Avatar" className="h-full w-full object-cover" />
           ) : (
@@ -50,12 +50,16 @@ export default function ProfilePage() {
         </span>
 
         <div className="mt-4 w-full">
-          <div className="flex justify-between text-sm text-slate-500">
+          <div className="flex justify-between text-sm font-display text-slate-500">
             <span>Niveau {profile.level}</span>
             <span>{xpIntoLevel}/100 XP</span>
           </div>
-          <div className="mt-1 h-2 overflow-hidden rounded-pill bg-haiti-blue/10">
-            <div className="h-full rounded-pill bg-haiti-green" style={{ width: `${xpIntoLevel}%` }} />
+          <div className="mt-1 h-3 overflow-hidden rounded-pill border-2 border-haiti-blue/10 bg-white">
+            <motion.div
+              className="h-full rounded-pill bg-haiti-green"
+              animate={{ width: `${xpIntoLevel}%` }}
+              transition={{ type: "spring", stiffness: 200, damping: 25 }}
+            />
           </div>
         </div>
       </motion.div>
