@@ -31,9 +31,17 @@ if render_hostname:
     ALLOWED_HOSTS.append(render_hostname)  # noqa: F405
     CSRF_TRUSTED_ORIGINS.append(f"https://{render_hostname}")  # noqa: F405
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# Sans fournisseur SMTP configure (EMAIL_HOST vide), utiliser le backend
+# reel ferait planter chaque inscription/reinitialisation de mot de passe
+# (tentative de connexion a un hote vide). On bascule sur un backend "dummy"
+# qui ignore silencieusement les emails tant qu'un service (SendGrid,
+# Mailgun...) n'est pas branche.
 EMAIL_HOST = env("EMAIL_HOST", default="")
-EMAIL_PORT = env.int("EMAIL_PORT", default=587)
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+if EMAIL_HOST:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_PORT = env.int("EMAIL_PORT", default=587)
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
+    EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"
