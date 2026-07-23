@@ -256,6 +256,10 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_RATES": {
         "battle-actions": "60/minute",
         "auth": "20/minute",
+        # Scope fixe utilise en dur par les vues de dj-rest-auth (login,
+        # logout, inscription, reset mot de passe) -- sans entree ici,
+        # ScopedRateThrottle leve ImproperlyConfigured des la 1ere requete.
+        "dj_rest_auth": "20/minute",
     },
 }
 
@@ -281,7 +285,11 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = "email"
-ACCOUNT_EMAIL_VERIFICATION = "optional"
+# "none" (pas "optional") : le frontend n'a pas de page de confirmation
+# d'email et allauth.account.urls n'est pas monte (API pure), donc
+# "optional" plantait quand meme l'inscription en essayant de generer un
+# lien vers une vue inexistante (NoReverseMatch sur account_confirm_email).
+ACCOUNT_EMAIL_VERIFICATION = "none"
 
 REST_USE_JWT = True
 JWT_AUTH_COOKIE = "defi-ayiti-access"
