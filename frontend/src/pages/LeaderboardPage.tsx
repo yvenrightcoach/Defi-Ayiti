@@ -51,7 +51,7 @@ export default function LeaderboardPage() {
   }, [scope, period]);
 
   return (
-    <section className="min-h-screen bg-haiti-blue/5 p-4">
+    <section className="min-h-screen p-4">
       <h1 className="mb-4 text-2xl font-display text-haiti-blue">Classements</h1>
 
       <div className="mb-3 flex gap-2 overflow-x-auto">

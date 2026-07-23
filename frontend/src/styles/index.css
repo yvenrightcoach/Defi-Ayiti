@@ -8,7 +8,7 @@
   }
 
   body {
-    @apply font-body bg-haiti-blueLight text-slate-800;
+    @apply font-body bg-slate-50 text-slate-800;
     /* Evite le bounce/zoom disgracieux sur mobile en mode PWA installee */
     overscroll-behavior-y: none;
     -webkit-tap-highlight-color: transparent;

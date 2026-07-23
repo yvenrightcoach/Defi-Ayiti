@@ -37,7 +37,7 @@ export default function AdventureMapPage() {
   if (error) return <ErrorMessage message={error} onRetry={load} />;
 
   return (
-    <section className="min-h-screen bg-haiti-blue/5 p-4">
+    <section className="min-h-screen p-4">
       <h1 className="mb-1 text-2xl font-display text-haiti-blue">Carte d'Haiti</h1>
       <p className="mb-4 text-sm text-slate-500">Choisis un departement pour commencer ton aventure.</p>
 

@@ -103,7 +103,7 @@ export default function QuizPage() {
   if (error && !finished) return <ErrorMessage message={error} onRetry={() => window.location.reload()} />;
   if (questions.length === 0) {
     return (
-      <div className="min-h-screen bg-haiti-blue/5 p-4">
+      <div className="min-h-screen p-4">
         <ErrorMessage message="Aucune question disponible pour le moment." />
       </div>
     );
@@ -122,7 +122,7 @@ export default function QuizPage() {
   }
 
   return (
-    <section className="min-h-screen bg-haiti-blue/5 p-4">
+    <section className="min-h-screen p-4">
       <div className="mb-3 flex items-center justify-between text-sm text-slate-500">
         <span>
           Question {index + 1}/{questions.length}

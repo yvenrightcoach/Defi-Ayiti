@@ -35,7 +35,7 @@ export default function HeroesPage() {
   const unlockedCount = heroes.filter((h) => h.is_unlocked).length;
 
   return (
-    <section className="min-h-screen bg-haiti-blue/5 p-4">
+    <section className="min-h-screen p-4">
       <h1 className="text-2xl font-display text-haiti-blue">Collection de heros</h1>
       <p className="mb-4 text-sm text-slate-500">
         {unlockedCount}/{heroes.length} heros debloques

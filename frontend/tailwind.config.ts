@@ -71,6 +71,24 @@ export default {
           "0%": { backgroundPositionX: "0" },
           "100%": { backgroundPositionX: "-200px" },
         },
+        "drift-1": {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "33%": { transform: "translate(24px, -30px) scale(1.06)" },
+          "66%": { transform: "translate(-18px, 16px) scale(0.96)" },
+        },
+        "drift-2": {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "33%": { transform: "translate(-28px, 22px) scale(0.95)" },
+          "66%": { transform: "translate(20px, -18px) scale(1.05)" },
+        },
+        "drift-3": {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "50%": { transform: "translate(16px, 26px) scale(1.08)" },
+        },
+        twinkle: {
+          "0%, 100%": { opacity: "0.25", transform: "scale(0.85)" },
+          "50%": { opacity: "1", transform: "scale(1.15)" },
+        },
       },
       animation: {
         "pop-in": "pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
@@ -78,6 +96,10 @@ export default {
         float: "float 3.5s ease-in-out infinite",
         wiggle: "wiggle 0.6s ease-in-out infinite",
         "bounce-in": "bounce-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "drift-1": "drift-1 14s ease-in-out infinite",
+        "drift-2": "drift-2 18s ease-in-out infinite",
+        "drift-3": "drift-3 11s ease-in-out infinite",
+        twinkle: "twinkle 2.4s ease-in-out infinite",
       },
     },
   },

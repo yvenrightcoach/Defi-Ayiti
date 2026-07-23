@@ -192,7 +192,7 @@ export default function BattlePage() {
   const isHost = room?.host.id === profile?.id;
 
   return (
-    <section className="min-h-screen bg-haiti-blue/5 p-4">
+    <section className="min-h-screen p-4">
       <h1 className="mb-4 text-2xl font-display text-haiti-blue">Battle</h1>
       {error && <ErrorMessage message={error} onRetry={() => setError(null)} />}
 

@@ -6,6 +6,7 @@ import { emailLogin, emailRegister, guestLogin } from "@/services/endpoints/auth
 import { getErrorMessage } from "@/lib/errors";
 import { useAuthStore } from "@/store/authStore";
 import Mascot from "@/components/ui/Mascot";
+import AnimatedBackground from "@/components/ui/AnimatedBackground";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -96,11 +97,8 @@ export default function LoginPage() {
   }
 
   return (
-    <section className="relative flex min-h-screen flex-col items-center justify-center gap-6 overflow-hidden bg-gradient-to-b from-haiti-blue to-haiti-blueDark p-6 text-white">
-      {/* Bulles decoratives en fond, style "aire de jeu" */}
-      <div className="pointer-events-none absolute -left-12 -top-12 h-40 w-40 rounded-full bg-haiti-yellow/20 blur-2xl" />
-      <div className="pointer-events-none absolute -right-16 top-16 h-56 w-56 rounded-full bg-haiti-red/20 blur-2xl" />
-      <div className="pointer-events-none absolute bottom-0 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-haiti-green/10 blur-3xl" />
+    <section className="relative flex min-h-screen flex-col items-center justify-center gap-6 p-6 text-white">
+      <AnimatedBackground variant="dark" />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.5, y: -20 }}

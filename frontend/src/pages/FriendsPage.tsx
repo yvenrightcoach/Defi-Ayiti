@@ -83,7 +83,7 @@ export default function FriendsPage() {
   const incomingRequests = requests.filter((r) => r.status === "pending" && r.addressee.id === profile?.id);
 
   return (
-    <section className="min-h-screen bg-haiti-blue/5 p-4">
+    <section className="min-h-screen p-4">
       <h1 className="mb-4 text-2xl font-display text-haiti-blue">Amis</h1>
 
       <div className="mb-4 flex gap-2">

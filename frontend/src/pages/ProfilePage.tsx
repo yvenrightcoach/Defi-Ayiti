@@ -29,7 +29,7 @@ export default function ProfilePage() {
   const xpIntoLevel = profile.xp % 100;
 
   return (
-    <section className="min-h-screen bg-haiti-blue/5 p-4">
+    <section className="min-h-screen p-4">
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}

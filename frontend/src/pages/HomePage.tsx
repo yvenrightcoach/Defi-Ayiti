@@ -35,7 +35,7 @@ export default function HomePage() {
   const xpIntoLevel = (profile?.xp ?? 0) % 100;
 
   return (
-    <div className="min-h-screen bg-haiti-blue/5 p-4">
+    <div className="min-h-screen p-4">
       <motion.section
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}

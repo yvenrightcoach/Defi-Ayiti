@@ -48,7 +48,7 @@ export default function DepartmentDetailPage() {
   }
 
   return (
-    <section className="min-h-screen bg-haiti-blue/5 p-4">
+    <section className="min-h-screen p-4">
       <Link to="/aventure" className="mb-2 inline-block text-sm text-haiti-blue">
         ← Retour a la carte
       </Link>
