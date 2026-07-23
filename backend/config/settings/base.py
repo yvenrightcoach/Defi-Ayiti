@@ -284,16 +284,35 @@ SPECTACULAR_SETTINGS = {
 ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = True
-ACCOUNT_AUTHENTICATION_METHOD = "email"
+# Le frontend collecte un nom d'utilisateur (pas un email) sur l'ecran de
+# connexion -- "username" fait correspondre allauth a ce champ.
+ACCOUNT_AUTHENTICATION_METHOD = "username"
 # "none" (pas "optional") : le frontend n'a pas de page de confirmation
 # d'email et allauth.account.urls n'est pas monte (API pure), donc
 # "optional" plantait quand meme l'inscription en essayant de generer un
 # lien vers une vue inexistante (NoReverseMatch sur account_confirm_email).
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
-REST_USE_JWT = True
-JWT_AUTH_COOKIE = "defi-ayiti-access"
-JWT_AUTH_REFRESH_COOKIE = "defi-ayiti-refresh"
+# dj-rest-auth (>=5) ignore completement les anciens settings a plat
+# REST_USE_JWT / JWT_AUTH_COOKIE / JWT_AUTH_REFRESH_COOKIE -- il ne lit que
+# ce dict imbrique. Sans lui, /auth/login/ et /auth/register/ renvoyaient un
+# token DRF classique ({"key": ...}) au lieu de {"access", "refresh", "user"}
+# attendu par le frontend, et ce token n'etait meme pas accepte par
+# JWTAuthentication (seul mecanisme actif cote DRF).
+#
+# Pas de JWT_AUTH_COOKIE/JWT_AUTH_REFRESH_COOKIE : le frontend garde deja
+# access/refresh cote client (store Zustand persiste), comme le fait
+# GuestLoginView. Les activer deplace le refresh token dans un cookie
+# httponly et renvoie "refresh": "" dans le JSON, ce qui casserait le
+# rafraichissement de session cote frontend.
+REST_AUTH = {
+    "USE_JWT": True,
+    "SESSION_LOGIN": False,
+    # Par defaut (True), dj-rest-auth vide "refresh" dans le JSON meme sans
+    # cookie configure -- il faut le desactiver explicitement puisque le
+    # frontend garde le refresh token cote client, pas dans un cookie.
+    "JWT_AUTH_HTTPONLY": False,
+}
 
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
