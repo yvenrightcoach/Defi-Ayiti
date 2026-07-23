@@ -10,9 +10,15 @@ geographie, la constitution, le civisme et la culture d'Haiti.
 **Phase 3 ✅ — API REST complete (serializers, viewsets, routers DRF) pour les 10 apps, testee de bout en bout.**
 **Phase 4 ✅ — Interfaces React connectees a l'API (aventure, quiz, profil, heros, ligues, amis, battle), validees dans un vrai navigateur avec deux joueurs simultanes.**
 **Phase 5 ✅ — Animations supplementaires (transitions de page, compteurs animes) + suite de tests automatises (34 tests pytest-django, 17 tests Vitest).**
+**Phase 6 ✅ (cote code) — Blueprint Render (5 services), icones PWA reelles, endpoint de sante, verification `check --deploy`, depot Git initialise.**
 
-La preparation finale du deploiement (Render + Supabase en production) est la
-derniere phase restante (voir [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)).
+Il ne reste que le **provisionnement externe**, qui necessite tes propres
+comptes (voir [docs/RENDER_DEPLOY.md](docs/RENDER_DEPLOY.md) et
+[docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md)) :
+1. Creer le projet Supabase et renseigner les vraies valeurs dans `.env`.
+2. Pousser ce depot sur GitHub/GitLab (`git remote add origin ... && git push`).
+3. Sur Render, **New > Blueprint** en pointant vers ce depot.
+4. Renseigner les variables marquees `sync: false` dans le dashboard Render.
 
 ## Stack technique
 
