@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply font-body bg-haiti-blue/5 text-slate-800;
+    /* Evite le bounce/zoom disgracieux sur mobile en mode PWA installee */
+    overscroll-behavior-y: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  .btn-game {
+    @apply inline-flex items-center justify-center rounded-pill px-6 py-3 font-display text-lg
+      shadow-card transition-transform active:scale-95;
+  }
+
+  .btn-game-primary {
+    @apply btn-game bg-haiti-yellow text-haiti-blue hover:shadow-card-hover;
+  }
+
+  .btn-game-secondary {
+    @apply btn-game bg-haiti-blue text-white hover:shadow-card-hover;
+  }
+
+  .card-game {
+    @apply rounded-card bg-white p-4 shadow-card;
+  }
+}

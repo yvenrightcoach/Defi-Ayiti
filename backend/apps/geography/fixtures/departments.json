@@ -1,0 +1,102 @@
+[
+  {
+    "model": "geography.department",
+    "pk": "699b8ff3-3b0f-53ea-9525-4f3664c7e761",
+    "fields": {
+      "name": "Ouest", "slug": "ouest", "code": "OU", "capital": "Port-au-Prince",
+      "description": "Departement abritant la capitale, Port-au-Prince.",
+      "map_image": "", "icon": "", "boss_name": "", "order": 1,
+      "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "geography.department",
+    "pk": "b7d78620-2011-5543-9259-72892512885b",
+    "fields": {
+      "name": "Nord", "slug": "nord", "code": "ND", "capital": "Cap-Haitien",
+      "description": "Berceau de la Citadelle Laferriere et du Palais Sans-Souci.",
+      "map_image": "", "icon": "", "boss_name": "", "order": 2,
+      "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "geography.department",
+    "pk": "61825877-4f05-5890-a4f3-90a650e8bee2",
+    "fields": {
+      "name": "Nord-Est", "slug": "nord-est", "code": "NE", "capital": "Fort-Liberte",
+      "description": "Departement frontalier avec la Republique Dominicaine.",
+      "map_image": "", "icon": "", "boss_name": "", "order": 3,
+      "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "geography.department",
+    "pk": "ce32c1ad-2c8e-53ca-8447-4df7a3d9cf7a",
+    "fields": {
+      "name": "Nord-Ouest", "slug": "nord-ouest", "code": "NO", "capital": "Port-de-Paix",
+      "description": "Region cotiere au nord-ouest du pays.",
+      "map_image": "", "icon": "", "boss_name": "", "order": 4,
+      "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "geography.department",
+    "pk": "499462a2-9189-5f22-8082-6c3513266bca",
+    "fields": {
+      "name": "Artibonite", "slug": "artibonite", "code": "ART", "capital": "Gonaives",
+      "description": "Ou l'independance d'Haiti a ete proclamee en 1804.",
+      "map_image": "", "icon": "", "boss_name": "", "order": 5,
+      "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "geography.department",
+    "pk": "df22012d-e701-5c31-b77a-869453878e02",
+    "fields": {
+      "name": "Centre", "slug": "centre", "code": "CTR", "capital": "Hinche",
+      "description": "Departement central, riche en histoire et en traditions.",
+      "map_image": "", "icon": "", "boss_name": "", "order": 6,
+      "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "geography.department",
+    "pk": "5359874a-0278-5458-94fa-c56cc8676330",
+    "fields": {
+      "name": "Sud", "slug": "sud", "code": "SUD", "capital": "Les Cayes",
+      "description": "Departement du sud, connu pour ses plages et son agriculture.",
+      "map_image": "", "icon": "", "boss_name": "", "order": 7,
+      "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "geography.department",
+    "pk": "7f250953-712c-5cc3-8b0c-6713d2429758",
+    "fields": {
+      "name": "Sud-Est", "slug": "sud-est", "code": "SE", "capital": "Jacmel",
+      "description": "Connu pour Jacmel, ville d'art et de carnaval.",
+      "map_image": "", "icon": "", "boss_name": "", "order": 8,
+      "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "geography.department",
+    "pk": "afef6c26-818d-5bf4-8a82-992155915bfa",
+    "fields": {
+      "name": "Grand'Anse", "slug": "grand-anse", "code": "GA", "capital": "Jeremie",
+      "description": "Surnomme 'la cite des poetes'.",
+      "map_image": "", "icon": "", "boss_name": "", "order": 9,
+      "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "geography.department",
+    "pk": "28134b3a-6546-580b-9499-46d8602eaa42",
+    "fields": {
+      "name": "Nippes", "slug": "nippes", "code": "NIP", "capital": "Miragoane",
+      "description": "Le plus jeune des dix departements d'Haiti (cree en 2003).",
+      "map_image": "", "icon": "", "boss_name": "", "order": 10,
+      "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z"
+    }
+  }
+]
