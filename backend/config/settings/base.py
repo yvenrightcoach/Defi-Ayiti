@@ -207,7 +207,14 @@ if USE_SUPABASE_STORAGE:
     AWS_S3_ADDRESSING_STYLE = "path"
     AWS_DEFAULT_ACL = "public-read"
     AWS_QUERYSTRING_AUTH = False
-    MEDIA_URL = f"{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_STORAGE_BUCKET}/"
+    # Sans ceci, S3Storage.url() construit une URL a partir de
+    # AWS_S3_ENDPOINT_URL (l'API S3 technique) au lieu de l'URL publique
+    # reelle des fichiers Supabase (/storage/v1/object/public/...).
+    AWS_S3_CUSTOM_DOMAIN = (
+        f"{SUPABASE_URL.replace('https://', '').replace('http://', '')}"
+        f"/storage/v1/object/public/{SUPABASE_STORAGE_BUCKET}"
+    )
+    MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"
 else:
     MEDIA_URL = "media/"
     MEDIA_ROOT = BASE_DIR / "media"
