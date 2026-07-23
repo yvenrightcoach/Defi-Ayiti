@@ -1,0 +1,135 @@
+# Blueprint Render COMPLET (payant) pour Defi Ayiti -- inclut les workers
+# Celery et Redis, indisponibles sur le plan gratuit de Render.
+#
+# Utilise ce fichier plus tard (renomme-le en render.yaml, ou pointe Render
+# vers lui via "Blueprint file path" dans les settings du Blueprint) quand
+# tu es pret a payer pour les taches asynchrones (classements, quetes
+# quotidiennes) et le temps reel multi-instance. En attendant, le
+# deploiement gratuit utilise render.yaml (defi-ayiti-api + defi-ayiti-app
+# seulement) ; le backend degrade automatiquement vers un cache local et
+# des taches Celery synchrones quand REDIS_URL est absent (voir
+# backend/config/settings/base.py).
+#
+# Remarque : Supabase Postgres n'est PAS defini ici -- la base de donnees
+# vit sur Supabase, pas sur Render. Seule la variable DATABASE_URL (definie
+# manuellement dans le dashboard Render) y fait reference.
+#
+# A verifier avant deploiement : les cles exactes du schema de blueprint
+# Render peuvent evoluer (notamment `runtime: static` pour les sites
+# statiques) -- se referer a https://render.com/docs/blueprint-spec au
+# moment du deploiement si Render signale une cle inconnue.
+
+services:
+  # API Django (ASGI, via Daphne) exposant REST + WebSocket
+  - type: web
+    name: defi-ayiti-api
+    runtime: python
+    rootDir: backend
+    plan: starter
+    region: oregon
+    buildCommand: "pip install -r requirements/production.txt && python manage.py collectstatic --noinput && python manage.py migrate"
+    startCommand: "daphne -b 0.0.0.0 -p $PORT config.asgi:application"
+    healthCheckPath: /healthz/
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.production
+      - key: DJANGO_SECRET_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: DJANGO_ALLOWED_HOSTS
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+      - key: CSRF_TRUSTED_ORIGINS
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+      - key: REDIS_URL
+        fromService:
+          name: defi-ayiti-redis
+          type: redis
+          property: connectionString
+
+  # Worker Celery (taches asynchrones : mise a jour classements, coffres, etc.)
+  - type: worker
+    name: defi-ayiti-celery-worker
+    runtime: python
+    rootDir: backend
+    plan: starter
+    region: oregon
+    buildCommand: "pip install -r requirements/production.txt"
+    startCommand: "celery -A config worker -l info"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.production
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: REDIS_URL
+        fromService:
+          name: defi-ayiti-redis
+          type: redis
+          property: connectionString
+
+  # Celery Beat (planification : quetes quotidiennes, saisons, classements hebdo)
+  - type: worker
+    name: defi-ayiti-celery-beat
+    runtime: python
+    rootDir: backend
+    plan: starter
+    region: oregon
+    buildCommand: "pip install -r requirements/production.txt"
+    startCommand: "celery -A config beat -l info"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.production
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: REDIS_URL
+        fromService:
+          name: defi-ayiti-redis
+          type: redis
+          property: connectionString
+
+  # Frontend PWA (site statique) -- alternative equivalente : Vercel ou Netlify
+  - type: web
+    name: defi-ayiti-app
+    runtime: static
+    rootDir: frontend
+    buildCommand: "npm install && npm run build"
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        sync: false
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false
+      - key: VITE_GOOGLE_CLIENT_ID
+        sync: false
+      - key: VITE_FACEBOOK_APP_ID
+        sync: false
+    routes:
+      # Fallback SPA : toute route inconnue sert index.html (React Router)
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+  # Redis (cache, Channels layer, broker Celery)
+  - type: redis
+    name: defi-ayiti-redis
+    plan: starter
+    region: oregon
+    ipAllowList: []

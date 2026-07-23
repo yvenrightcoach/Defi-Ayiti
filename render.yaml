@@ -1,5 +1,16 @@
-# Blueprint Render pour Defi Ayiti (monorepo backend Django + frontend React).
+# Blueprint Render GRATUIT pour Defi Ayiti (monorepo backend Django + frontend React).
 # Documentation complete du deploiement : docs/RENDER_DEPLOY.md
+#
+# Render n'offre pas de plan gratuit pour les Background Workers ni pour
+# Redis/Key Value : seuls les Web Services (plan "free") et les sites
+# statiques (toujours gratuits) sont inclus ici. Consequence : pas de
+# Celery worker/beat, pas de Redis -- le backend degrade automatiquement
+# vers un cache local et des taches Celery synchrones dans ce cas (voir
+# backend/config/settings/base.py, bloc "if REDIS_URL"). Les classements
+# et quetes fonctionnent toujours, juste sans planification en arriere-plan.
+#
+# Pour activer plus tard les workers + Redis (plan payant), voir
+# render.full.yaml.
 #
 # Remarque : Supabase Postgres n'est PAS defini ici -- la base de donnees
 # vit sur Supabase, pas sur Render. Seule la variable DATABASE_URL (definie
@@ -16,7 +27,7 @@ services:
     name: defi-ayiti-api
     runtime: python
     rootDir: backend
-    plan: starter
+    plan: free
     region: oregon
     buildCommand: "pip install -r requirements/production.txt && python manage.py collectstatic --noinput && python manage.py migrate"
     startCommand: "daphne -b 0.0.0.0 -p $PORT config.asgi:application"
@@ -40,59 +51,6 @@ services:
         sync: false
       - key: SENTRY_DSN
         sync: false
-      - key: REDIS_URL
-        fromService:
-          name: defi-ayiti-redis
-          type: redis
-          property: connectionString
-
-  # Worker Celery (taches asynchrones : mise a jour classements, coffres, etc.)
-  - type: worker
-    name: defi-ayiti-celery-worker
-    runtime: python
-    rootDir: backend
-    plan: starter
-    region: oregon
-    buildCommand: "pip install -r requirements/production.txt"
-    startCommand: "celery -A config worker -l info"
-    envVars:
-      - key: DJANGO_SETTINGS_MODULE
-        value: config.settings.production
-      - key: DATABASE_URL
-        sync: false
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_SERVICE_ROLE_KEY
-        sync: false
-      - key: REDIS_URL
-        fromService:
-          name: defi-ayiti-redis
-          type: redis
-          property: connectionString
-
-  # Celery Beat (planification : quetes quotidiennes, saisons, classements hebdo)
-  - type: worker
-    name: defi-ayiti-celery-beat
-    runtime: python
-    rootDir: backend
-    plan: starter
-    region: oregon
-    buildCommand: "pip install -r requirements/production.txt"
-    startCommand: "celery -A config beat -l info"
-    envVars:
-      - key: DJANGO_SETTINGS_MODULE
-        value: config.settings.production
-      - key: DATABASE_URL
-        sync: false
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_SERVICE_ROLE_KEY
-        sync: false
-      - key: REDIS_URL
-        fromService:
-          name: defi-ayiti-redis
-          type: redis
-          property: connectionString
 
   # Frontend PWA (site statique) -- alternative equivalente : Vercel ou Netlify
   - type: web
@@ -117,10 +75,3 @@ services:
       - type: rewrite
         source: /*
         destination: /index.html
-
-  # Redis (cache, Channels layer, broker Celery)
-  - type: redis
-    name: defi-ayiti-redis
-    plan: starter
-    region: oregon
-    ipAllowList: []
