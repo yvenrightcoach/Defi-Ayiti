@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Navigate, useNavigate } from "react-router-dom";
 
-import { emailLogin, guestLogin } from "@/services/endpoints/auth";
+import { emailLogin, emailRegister, guestLogin } from "@/services/endpoints/auth";
 import { getErrorMessage } from "@/lib/errors";
 import { useAuthStore } from "@/store/authStore";
 
@@ -10,13 +10,23 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const accessToken = useAuthStore((state) => state.accessToken);
   const setSession = useAuthStore((state) => state.setSession);
+  const [mode, setMode] = useState<"login" | "register">("login");
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
   const [loadingAction, setLoadingAction] = useState<"guest" | "email" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   if (accessToken) {
     return <Navigate to="/" replace />;
+  }
+
+  function switchMode(nextMode: "login" | "register") {
+    setMode(nextMode);
+    setError(null);
+    setPassword("");
+    setPassword2("");
   }
 
   async function handleGuestLogin() {
@@ -56,6 +66,34 @@ export default function LoginPage() {
     }
   }
 
+  async function handleRegister(event: React.FormEvent) {
+    event.preventDefault();
+    setError(null);
+    if (password !== password2) {
+      setError("Les mots de passe ne correspondent pas.");
+      return;
+    }
+    setLoadingAction("email");
+    try {
+      const { access, refresh, user } = await emailRegister({
+        username,
+        email,
+        password1: password,
+        password2,
+      });
+      setSession({
+        accessToken: access,
+        refreshToken: refresh,
+        user: { id: user.pk, username: user.username, email: user.email, isGuest: false },
+      });
+      navigate("/", { replace: true });
+    } catch (err) {
+      setError(getErrorMessage(err, "Impossible de creer le compte."));
+    } finally {
+      setLoadingAction(null);
+    }
+  }
+
   return (
     <section className="flex min-h-screen flex-col items-center justify-center gap-6 bg-haiti-blue p-6 text-white">
       <motion.div
@@ -82,7 +120,10 @@ export default function LoginPage() {
           <span className="h-px flex-1 bg-white/20" />
         </div>
 
-        <form onSubmit={handleEmailLogin} className="card-game space-y-3 text-slate-800">
+        <form
+          onSubmit={mode === "login" ? handleEmailLogin : handleRegister}
+          className="card-game space-y-3 text-slate-800"
+        >
           <input
             type="text"
             placeholder="Nom d'utilisateur"
@@ -91,6 +132,16 @@ export default function LoginPage() {
             className="w-full rounded-pill border border-slate-200 px-4 py-2 outline-none focus:border-haiti-blue"
             required
           />
+          {mode === "register" && (
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full rounded-pill border border-slate-200 px-4 py-2 outline-none focus:border-haiti-blue"
+              required
+            />
+          )}
           <input
             type="password"
             placeholder="Mot de passe"
@@ -99,14 +150,39 @@ export default function LoginPage() {
             className="w-full rounded-pill border border-slate-200 px-4 py-2 outline-none focus:border-haiti-blue"
             required
           />
+          {mode === "register" && (
+            <input
+              type="password"
+              placeholder="Confirmer le mot de passe"
+              value={password2}
+              onChange={(e) => setPassword2(e.target.value)}
+              className="w-full rounded-pill border border-slate-200 px-4 py-2 outline-none focus:border-haiti-blue"
+              required
+            />
+          )}
           <button
             type="submit"
             disabled={loadingAction !== null}
             className="btn-game-secondary w-full disabled:opacity-60"
           >
-            {loadingAction === "email" ? "Connexion..." : "Se connecter"}
+            {loadingAction === "email"
+              ? mode === "login"
+                ? "Connexion..."
+                : "Creation..."
+              : mode === "login"
+                ? "Se connecter"
+                : "Creer mon compte"}
           </button>
         </form>
+
+        <button
+          type="button"
+          onClick={() => switchMode(mode === "login" ? "register" : "login")}
+          disabled={loadingAction !== null}
+          className="mt-3 w-full text-center text-sm text-white/80 underline-offset-2 hover:underline disabled:opacity-60"
+        >
+          {mode === "login" ? "Pas de compte ? Inscris-toi" : "Deja un compte ? Connecte-toi"}
+        </button>
 
         {error && <p className="mt-4 text-center text-sm text-haiti-yellow">{error}</p>}
 
