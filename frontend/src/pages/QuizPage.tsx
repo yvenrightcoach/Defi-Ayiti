@@ -12,7 +12,7 @@ import { useCountUp } from "@/hooks/useCountUp";
 import { getErrorMessage } from "@/lib/errors";
 import { playCorrect, playSuccess, playUnlock, playWrong } from "@/lib/sound";
 import { completeLevel } from "@/services/endpoints/progress";
-import { listQuestions, submitAnswer } from "@/services/endpoints/quiz";
+import { listQuestionSession, submitAnswer } from "@/services/endpoints/quiz";
 import { useProfileStore } from "@/store/profileStore";
 import type { AnswerResult, CompleteLevelResult, Question } from "@/types/api";
 
@@ -38,8 +38,8 @@ export default function QuizPage() {
       setIsLoading(true);
       setError(null);
       try {
-        const data = await listQuestions(levelId ? { level: levelId } : {});
-        setQuestions(data.slice(0, levelId ? data.length : 5));
+        const data = await listQuestionSession(levelId ? { level: levelId } : {});
+        setQuestions(data);
       } catch (err) {
         setError(getErrorMessage(err, "Impossible de charger les questions."));
       } finally {

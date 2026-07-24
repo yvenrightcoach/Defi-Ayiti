@@ -1,4 +1,6 @@
 """Vues DRF de l'app 'quiz'."""
+from django.db.models import Q
+from django.db.models.functions import Random
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
@@ -33,6 +35,40 @@ class QuestionViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = QuestionSerializer
     filterset_fields = ["category", "department", "level", "difficulty", "question_type"]
     queryset = Question.objects.filter(is_active=True).select_related("category").prefetch_related("answers")
+
+    MAX_SESSION_QUESTIONS = 30
+
+    @action(detail=False, methods=["get"])
+    def session(self, request):
+        """
+        Tire jusqu'a 30 questions aleatoires pour une session de jeu (quiz
+        d'un chapitre ou quiz rapide) : l'ordre et la selection changent a
+        chaque appel, pour plus de difficulte et de rejouabilite.
+
+        Avec un niveau precise, combine les questions propres a ce chapitre
+        et les questions generales (sans niveau ni departement), pour offrir
+        un vrai brassage meme sur les chapitres a faible effectif.
+        """
+        level_id = request.query_params.get("level")
+        try:
+            limit = min(int(request.query_params.get("limit", self.MAX_SESSION_QUESTIONS)), self.MAX_SESSION_QUESTIONS)
+        except ValueError:
+            limit = self.MAX_SESSION_QUESTIONS
+
+        qs = self.get_queryset()
+        if level_id:
+            qs = qs.filter(Q(level_id=level_id) | Q(level__isnull=True, department__isnull=True))
+        else:
+            category_id = request.query_params.get("category")
+            department_id = request.query_params.get("department")
+            if category_id:
+                qs = qs.filter(category_id=category_id)
+            if department_id:
+                qs = qs.filter(department_id=department_id)
+
+        questions = list(qs.order_by(Random())[:limit])
+        serializer = self.get_serializer(questions, many=True)
+        return Response(serializer.data)
 
     @extend_schema(request=SubmitAnswerSerializer, responses=AnswerResultSerializer)
     @action(detail=True, methods=["post"])

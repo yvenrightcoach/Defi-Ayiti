@@ -6,11 +6,21 @@ export async function listCategories(): Promise<Category[]> {
   return data.results;
 }
 
-export async function listQuestions(filters: { level?: string; category?: string; department?: string }) {
-  const { data } = await apiClient.get<Paginated<Question>>("/quiz/questions/", {
-    params: { page_size: 50, ...filters },
+const MAX_SESSION_QUESTIONS = 30;
+
+/**
+ * Tire jusqu'a 30 questions aleatoires pour une session de jeu : l'ordre et
+ * la selection changent a chaque appel, pour plus de difficulte.
+ */
+export async function listQuestionSession(filters: {
+  level?: string;
+  category?: string;
+  department?: string;
+}): Promise<Question[]> {
+  const { data } = await apiClient.get<Question[]>("/quiz/questions/session/", {
+    params: { limit: MAX_SESSION_QUESTIONS, ...filters },
   });
-  return data.results;
+  return data;
 }
 
 export async function submitAnswer(questionId: string, answerIds: string[]): Promise<AnswerResult> {

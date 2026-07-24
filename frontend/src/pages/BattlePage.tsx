@@ -116,7 +116,7 @@ export default function BattlePage() {
     setIsBusy(true);
     setError(null);
     try {
-      const match = await startMatch(room.id, { category: selectedCategory || undefined, question_count: 5 });
+      const match = await startMatch(room.id, { category: selectedCategory || undefined, question_count: 30 });
       loadedMatchIdRef.current = match.id;
       const fullQuestions = await getQuestionsByIds(match.questions);
       setQuestions(fullQuestions);

@@ -1,5 +1,6 @@
 import pytest
 
+from apps.geography.models import Department, Level
 from apps.quiz.models import Answer, Category, Question
 from apps.rewards.models import Mission, PlayerMission
 
@@ -80,3 +81,46 @@ class TestSubmitAnswer:
         player_mission.refresh_from_db()
         assert player_mission.is_completed is True
         assert player_mission.reward_claimed is False
+
+
+@pytest.fixture
+def level_with_pool(db):
+    """Un chapitre avec 3 questions dediees + 40 questions generales (sans niveau ni departement)."""
+    category = Category.objects.create(name="Histoire", slug="histoire")
+    department = Department.objects.create(name="Ouest", slug="ouest", code="OU")
+    level = Level.objects.create(department=department, order=1, name="Les origines")
+
+    for i in range(3):
+        Question.objects.create(category=category, level=level, department=department, text=f"Question niveau {i}")
+    for i in range(40):
+        Question.objects.create(category=category, text=f"Question generale {i}")
+
+    return level
+
+
+@pytest.mark.django_db
+class TestQuestionSession:
+    def test_caps_at_30_questions(self, auth_client, level_with_pool):
+        client, _ = auth_client
+        response = client.get(f"/api/v1/quiz/questions/session/?level={level_with_pool.id}")
+        assert response.status_code == 200
+        assert len(response.data) == 30
+
+    def test_combines_level_and_general_pool(self, auth_client, level_with_pool):
+        client, _ = auth_client
+        response = client.get(f"/api/v1/quiz/questions/session/?level={level_with_pool.id}")
+        texts = {q["text"] for q in response.data}
+        assert any(t.startswith("Question niveau") for t in texts)
+        assert any(t.startswith("Question generale") for t in texts)
+
+    def test_random_order_varies_between_calls(self, auth_client, level_with_pool):
+        client, _ = auth_client
+        first = [q["id"] for q in client.get(f"/api/v1/quiz/questions/session/?level={level_with_pool.id}").data]
+        second = [q["id"] for q in client.get(f"/api/v1/quiz/questions/session/?level={level_with_pool.id}").data]
+        assert first != second
+
+    def test_without_level_uses_full_active_pool(self, auth_client, level_with_pool):
+        client, _ = auth_client
+        response = client.get("/api/v1/quiz/questions/session/")
+        assert response.status_code == 200
+        assert len(response.data) == 30

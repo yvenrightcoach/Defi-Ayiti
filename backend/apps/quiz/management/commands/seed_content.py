@@ -787,6 +787,66 @@ EXTRA_QUESTIONS = [
         "answers": ["Les Etats-Unis", "Le Canada", "Le Mexique", "Le Bresil"],
         "explanation": "Les Etats-Unis (1776) precedent Haiti (1804) parmi les nations independantes des Ameriques.",
     },
+    {
+        "cat": "histoire", "diff": "easy",
+        "text": "En quelle annee Haiti a-t-il proclame son independance ?",
+        "answers": ["1804", "1791", "1802", "1806"],
+        "explanation": "L'independance est proclamee le 1er janvier 1804, aux Gonaives.",
+    },
+    {
+        "cat": "histoire", "diff": "medium",
+        "text": "Qui a proclame l'independance d'Haiti le 1er janvier 1804 ?",
+        "answers": ["Jean-Jacques Dessalines", "Toussaint Louverture", "Henri Christophe", "Alexandre Petion"],
+        "explanation": "Dessalines proclame l'independance et devient le premier chef d'Etat d'Haiti.",
+    },
+    {
+        "cat": "histoire", "diff": "medium",
+        "text": "Comment s'appelait Haiti sous la colonisation francaise ?",
+        "answers": ["Saint-Domingue", "Hispaniola", "Quisqueya", "La Navidad"],
+        "explanation": "La colonie francaise prospere portait le nom de Saint-Domingue.",
+    },
+    {
+        "cat": "heros", "diff": "medium",
+        "text": "Quel heros est considere comme le fondateur de la nation haitienne, ayant proclame l'independance en 1804 ?",
+        "answers": ["Jean-Jacques Dessalines", "Toussaint Louverture", "Henri Christophe", "Alexandre Petion"],
+        "explanation": "Dessalines est souvent designe comme le pere fondateur de la nation haitienne.",
+    },
+    {
+        "cat": "heros", "diff": "hard",
+        "text": "Quel general haitien a fait construire la Citadelle Laferriere pour se defendre d'un eventuel retour francais ?",
+        "answers": ["Henri Christophe", "Alexandre Petion", "Jean-Jacques Dessalines", "Toussaint Louverture"],
+        "explanation": "Henri Christophe, roi du Nord, fait construire la Citadelle apres l'independance.",
+    },
+    {
+        "cat": "geographie", "diff": "medium",
+        "text": "Combien de departements administratifs compte Haiti ?",
+        "answers": ["10", "9", "12", "8"],
+        "explanation": "Haiti est divise en 10 departements depuis 2003 (creation des Nippes).",
+    },
+    {
+        "cat": "geographie", "diff": "easy",
+        "text": "Quelle est la capitale d'Haiti ?",
+        "answers": ["Port-au-Prince", "Cap-Haitien", "Jacmel", "Les Cayes"],
+        "explanation": "Port-au-Prince, fondee en 1749, est la capitale et plus grande ville d'Haiti.",
+    },
+    {
+        "cat": "civisme", "diff": "medium",
+        "text": "Quelles sont les couleurs du drapeau haitien ?",
+        "answers": ["Bleu et rouge", "Bleu, blanc et rouge", "Vert et rouge", "Noir et rouge"],
+        "explanation": "Le bleu et le rouge, herites du drapeau francais depouille de son blanc, symbolisent l'union.",
+    },
+    {
+        "cat": "civisme", "diff": "hard",
+        "text": "Selon la tradition, ou le drapeau bicolore bleu et rouge a-t-il ete cree en 1803 ?",
+        "answers": ["Au Congres de l'Arcahaie", "A Vertieres", "Aux Gonaives", "Au Cap-Haitien"],
+        "explanation": "Au Congres de l'Arcahaie, Dessalines aurait dechire la bande blanche du drapeau francais.",
+    },
+    {
+        "cat": "culture", "diff": "medium",
+        "text": "Quel instrument en bambou ou en metal, embleme du rara et du carnaval haitien, sert de trompette ?",
+        "answers": ["Le vaksin (vaccine)", "Le tambour djembe", "La guitare", "Le piano"],
+        "explanation": "Le vaksin, ou vaccine, est une trompette rudimentaire au son caracteristique du rara.",
+    },
 ]
 
 
