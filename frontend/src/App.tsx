@@ -1,6 +1,7 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 import { useGlobalClickSound } from "@/hooks/useGlobalClickSound";
+import { useMenuMusic } from "@/hooks/useMenuMusic";
 import AppLayout from "@/components/layout/AppLayout";
 import AdventureMapPage from "@/pages/AdventureMapPage";
 import BattlePage from "@/pages/BattlePage";
@@ -15,6 +16,8 @@ import QuizPage from "@/pages/QuizPage";
 
 export default function App() {
   useGlobalClickSound();
+  const location = useLocation();
+  useMenuMusic(location.pathname);
 
   return (
     <Routes>

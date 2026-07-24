@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Navigate, useNavigate } from "react-router-dom";
 
 import { emailLogin, emailRegister, guestLogin } from "@/services/endpoints/auth";
 import { getErrorMessage } from "@/lib/errors";
-import { playMenuMusic, stopMenuMusic } from "@/lib/sound";
 import { useAuthStore } from "@/store/authStore";
 import Mascot from "@/components/ui/Mascot";
 import AnimatedBackground from "@/components/ui/AnimatedBackground";
@@ -20,11 +19,6 @@ export default function LoginPage() {
   const [password2, setPassword2] = useState("");
   const [loadingAction, setLoadingAction] = useState<"guest" | "email" | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    playMenuMusic();
-    return () => stopMenuMusic();
-  }, []);
 
   if (accessToken) {
     return <Navigate to="/" replace />;
