@@ -14,6 +14,12 @@ from apps.geography.models import Department, Level
 from apps.heroes.models import Hero
 from apps.quiz.models import Answer, Category, Question
 
+# Un chapitre d'aventure tire jusqu'a 50 questions au hasard (chapitre +
+# banque generale) et exige au moins 45 bonnes reponses (90%) pour etre
+# valide.
+LEVEL_QUESTION_COUNT = 50
+LEVEL_REQUIRED_SCORE = 90
+
 CATEGORIES = [
     {
         "slug": "histoire",
@@ -186,6 +192,121 @@ HEROES = [
         "quote": "",
         "rarity": "rare",
         "order": 10,
+    },
+
+    # --- Heros bonus : pas lies a un chapitre precis, obtenus au hasard
+    # apres un chapitre reussi (voir BONUS_HERO_DROP_RATES cote backend).
+    # Les legendaires y sont volontairement rares.
+    {
+        "slug": "dutty-boukman",
+        "name": "Dutty Boukman",
+        "biography": (
+            "Pretre vaudou et esclave marron, il preside la ceremonie du "
+            "Bois-Caiman le 14 aout 1791, qui declenche l'insurrection generale "
+            "des esclaves du Nord et ouvre la voie a la revolution haitienne. Il "
+            "est tue par les forces coloniales quelques semaines plus tard."
+        ),
+        "quote": "",
+        "rarity": "legendary",
+        "order": 11,
+    },
+    {
+        "slug": "cecile-fatiman",
+        "name": "Cecile Fatiman",
+        "biography": (
+            "Mambo (pretresse vodou), elle co-officie aux cotes de Dutty Boukman "
+            "la ceremonie du Bois-Caiman en aout 1791, moment fondateur de la "
+            "revolution haitienne."
+        ),
+        "quote": "",
+        "rarity": "epic",
+        "order": 12,
+    },
+    {
+        "slug": "vincent-oge",
+        "name": "Vincent Oge",
+        "biography": (
+            "Riche mulatre libre, il reclame en 1790 le droit de vote pour les "
+            "gens de couleur libres au nom des principes de la Revolution "
+            "francaise. Son insurrection est ecrasee et il est execute "
+            "publiquement en 1791, devenant un symbole du combat pour l'egalite."
+        ),
+        "quote": "",
+        "rarity": "epic",
+        "order": 13,
+    },
+    {
+        "slug": "jean-baptiste-chavannes",
+        "name": "Jean-Baptiste Chavannes",
+        "biography": (
+            "Compagnon d'armes de Vincent Oge, il participe avec lui a "
+            "l'insurrection de 1790 pour les droits des gens de couleur libres. "
+            "Capture, il est execute a ses cotes en 1791."
+        ),
+        "quote": "",
+        "rarity": "rare",
+        "order": 14,
+    },
+    {
+        "slug": "nicolas-geffrard",
+        "name": "Nicolas Geffrard",
+        "biography": (
+            "Musicien haitien, il compose en 1903 la musique de 'La "
+            "Dessalinienne', qui devient l'hymne national d'Haiti en 1904, sur "
+            "des paroles de Justin Lherisson."
+        ),
+        "quote": "",
+        "rarity": "rare",
+        "order": 15,
+    },
+    {
+        "slug": "justin-lherisson",
+        "name": "Justin Lherisson",
+        "biography": (
+            "Ecrivain et journaliste, il ecrit en 1903 les paroles de 'La "
+            "Dessalinienne', l'hymne national d'Haiti, mises en musique par "
+            "Nicolas Geffrard."
+        ),
+        "quote": "",
+        "rarity": "rare",
+        "order": 16,
+    },
+    {
+        "slug": "oswald-durand",
+        "name": "Oswald Durand",
+        "biography": (
+            "Poete national d'Haiti au 19e siecle, il est celebre pour son "
+            "poeme 'Choucoune', dont la melodie inspirera plus tard la chanson "
+            "'Yellow Bird'."
+        ),
+        "quote": "",
+        "rarity": "common",
+        "order": 17,
+    },
+    {
+        "slug": "jean-price-mars",
+        "name": "Jean Price-Mars",
+        "biography": (
+            "Ecrivain, medecin et ethnologue, il fonde au debut du 20e siecle "
+            "le mouvement de l'indigenisme haitien avec son ouvrage 'Ainsi "
+            "parla l'oncle', qui valorise la culture et les traditions "
+            "populaires haitiennes."
+        ),
+        "quote": "",
+        "rarity": "common",
+        "order": 18,
+    },
+    {
+        "slug": "nemours-jean-baptiste",
+        "name": "Nemours Jean-Baptiste",
+        "biography": (
+            "Musicien et saxophoniste, il est considere comme le createur du "
+            "konpa direct dans les annees 1950, genre musical embleme d'Haiti "
+            "encore tres populaire aujourd'hui."
+        ),
+        "quote": "",
+        "rarity": "common",
+        "order": 19,
     },
 ]
 
@@ -1167,12 +1288,20 @@ class Command(BaseCommand):
                 defaults={
                     "name": level_data["name"],
                     "description": level_data["description"],
-                    "question_count": len(level_data["questions"]),
-                    "unlocks_hero": heroes.get(level_data["hero"]),
                 },
             )
             if created:
                 level_count += 1
+
+            # Chaque departement n'a qu'un seul chapitre : c'est donc aussi
+            # son "boss final". Applique a chaque run (pas seulement a la
+            # creation) pour corriger retroactivement les niveaux deja
+            # semes avant l'augmentation a 50 questions / 90% de reussite.
+            level.question_count = LEVEL_QUESTION_COUNT
+            level.required_score = LEVEL_REQUIRED_SCORE
+            level.is_boss_level = True
+            level.unlocks_hero = heroes.get(level_data["hero"])
+            level.save(update_fields=["question_count", "required_score", "is_boss_level", "unlocks_hero"])
 
             question_count += self._seed_questions(
                 level_data["questions"], categories, level=level, department=department

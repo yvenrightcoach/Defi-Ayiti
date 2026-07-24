@@ -7,6 +7,13 @@ import { getErrorMessage } from "@/lib/errors";
 import { listHeroes } from "@/services/endpoints/heroes";
 import type { Hero } from "@/types/api";
 
+const RARITY_STYLES: Record<Hero["rarity"], { label: string; ring: string; badge: string; glow: string }> = {
+  common: { label: "Commun", ring: "border-slate-200", badge: "bg-slate-100 text-slate-500", glow: "" },
+  rare: { label: "Rare", ring: "border-haiti-blue/40", badge: "bg-haiti-blueLight text-haiti-blue", glow: "" },
+  epic: { label: "Epique", ring: "border-purple-400", badge: "bg-purple-100 text-purple-600", glow: "shadow-[0_0_16px_theme(colors.purple.300)]" },
+  legendary: { label: "Legendaire", ring: "border-haiti-yellow", badge: "bg-haiti-yellow/30 text-haiti-yellowDark", glow: "shadow-[0_0_20px_theme(colors.haiti.yellow)]" },
+};
+
 export default function HeroesPage() {
   const [heroes, setHeroes] = useState<Hero[]>([]);
   const [selected, setSelected] = useState<Hero | null>(null);
@@ -55,31 +62,34 @@ export default function HeroesPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        {heroes.map((hero, index) => (
-          <motion.button
-            key={hero.id}
-            type="button"
-            initial={{ opacity: 0, y: 10, scale: 0.85 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ delay: index * 0.04, type: "spring", stiffness: 300, damping: 20 }}
-            onClick={() => hero.is_unlocked && setSelected(hero)}
-            className={`card-game flex flex-col items-center gap-1 py-4 text-center transition-all duration-150 ${
-              hero.is_unlocked
-                ? "hover:-translate-y-1 hover:shadow-card-hover active:translate-y-0"
-                : "opacity-50 grayscale"
-            }`}
-          >
-            <span
-              className={`flex h-14 w-14 items-center justify-center rounded-full text-3xl ${
-                hero.is_unlocked ? "bg-haiti-yellow/25" : "bg-slate-100"
+        {heroes.map((hero, index) => {
+          const rarity = RARITY_STYLES[hero.rarity];
+          return (
+            <motion.button
+              key={hero.id}
+              type="button"
+              initial={{ opacity: 0, y: 10, scale: 0.85 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: index * 0.04, type: "spring", stiffness: 300, damping: 20 }}
+              onClick={() => hero.is_unlocked && setSelected(hero)}
+              className={`card-game flex flex-col items-center gap-1 border-2 py-4 text-center transition-all duration-150 ${
+                hero.is_unlocked
+                  ? `${rarity.ring} ${rarity.glow} hover:-translate-y-1 hover:shadow-card-hover active:translate-y-0`
+                  : "border-slate-100 opacity-50 grayscale"
               }`}
             >
-              {hero.is_unlocked ? "🎖️" : "🔒"}
-            </span>
-            <span className="font-display text-sm text-haiti-blue">{hero.name}</span>
-            <span className="text-xs capitalize text-slate-400">{hero.rarity}</span>
-          </motion.button>
-        ))}
+              <span
+                className={`flex h-14 w-14 items-center justify-center rounded-full text-3xl ${
+                  hero.is_unlocked ? "bg-haiti-yellow/25" : "bg-slate-100"
+                }`}
+              >
+                {hero.is_unlocked ? "🎖️" : "🔒"}
+              </span>
+              <span className="font-display text-sm text-haiti-blue">{hero.name}</span>
+              <span className={`rounded-pill px-2 py-0.5 text-xs font-display ${rarity.badge}`}>{rarity.label}</span>
+            </motion.button>
+          );
+        })}
       </div>
 
       <AnimatePresence>

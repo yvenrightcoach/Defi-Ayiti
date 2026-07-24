@@ -51,6 +51,20 @@ export default function AdventureMapPage() {
       <div className="grid grid-cols-2 gap-3">
         {departments.map((dept, index) => {
           const deptProgress = progress.find((p) => p.department === dept.id);
+          const unlocked = dept.is_unlocked;
+          const content = (
+            <>
+              <span className="text-3xl">{unlocked ? "🏝️" : "🔒"}</span>
+              <span className={`font-display ${unlocked ? "text-haiti-blue" : "text-slate-400"}`}>{dept.name}</span>
+              <span className="text-xs text-slate-400">{unlocked ? dept.capital : "Verrouille"}</span>
+              {unlocked && deptProgress && (
+                <span className="mt-1 text-xs text-haiti-green">
+                  {"⭐".repeat(Math.min(deptProgress.stars, 5)) || "Commence"}
+                  {deptProgress.is_completed ? " · Termine" : ""}
+                </span>
+              )}
+            </>
+          );
           return (
             <motion.div
               key={dept.id}
@@ -58,20 +72,21 @@ export default function AdventureMapPage() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ delay: index * 0.04, type: "spring", stiffness: 300, damping: 20 }}
             >
-              <Link
-                to={`/aventure/${dept.id}`}
-                className="card-game flex flex-col items-center gap-1 py-5 text-center transition-all duration-150 hover:-translate-y-1 hover:shadow-card-hover active:translate-y-0.5"
-              >
-                <span className="text-3xl">🏝️</span>
-                <span className="font-display text-haiti-blue">{dept.name}</span>
-                <span className="text-xs text-slate-400">{dept.capital}</span>
-                {deptProgress && (
-                  <span className="mt-1 text-xs text-haiti-green">
-                    {"⭐".repeat(Math.min(deptProgress.stars, 5)) || "Commence"}
-                    {deptProgress.is_completed ? " · Termine" : ""}
-                  </span>
-                )}
-              </Link>
+              {unlocked ? (
+                <Link
+                  to={`/aventure/${dept.id}`}
+                  className="card-game flex flex-col items-center gap-1 py-5 text-center transition-all duration-150 hover:-translate-y-1 hover:shadow-card-hover active:translate-y-0.5"
+                >
+                  {content}
+                </Link>
+              ) : (
+                <div
+                  aria-disabled
+                  className="card-game flex flex-col items-center gap-1 py-5 text-center opacity-50 grayscale"
+                >
+                  {content}
+                </div>
+              )}
             </motion.div>
           );
         })}

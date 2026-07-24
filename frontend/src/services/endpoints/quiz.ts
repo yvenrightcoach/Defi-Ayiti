@@ -6,20 +6,18 @@ export async function listCategories(): Promise<Category[]> {
   return data.results;
 }
 
-const MAX_SESSION_QUESTIONS = 30;
-
 /**
- * Tire jusqu'a 30 questions aleatoires pour une session de jeu : l'ordre et
- * la selection changent a chaque appel, pour plus de difficulte.
+ * Tire des questions aleatoires pour une session de jeu : l'ordre et la
+ * selection changent a chaque appel, pour plus de difficulte. Le nombre de
+ * questions (50 pour un chapitre d'aventure, 30 sinon) est decide cote
+ * serveur.
  */
 export async function listQuestionSession(filters: {
   level?: string;
   category?: string;
   department?: string;
 }): Promise<Question[]> {
-  const { data } = await apiClient.get<Question[]>("/quiz/questions/session/", {
-    params: { limit: MAX_SESSION_QUESTIONS, ...filters },
-  });
+  const { data } = await apiClient.get<Question[]>("/quiz/questions/session/", { params: filters });
   return data;
 }
 

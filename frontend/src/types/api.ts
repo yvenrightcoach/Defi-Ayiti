@@ -44,6 +44,7 @@ export interface Department {
   icon: string;
   boss_name: string;
   order: number;
+  is_unlocked: boolean;
 }
 
 export interface Level {

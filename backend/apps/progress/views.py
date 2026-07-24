@@ -1,4 +1,6 @@
 """Vues DRF de l'app 'progress'."""
+import random
+
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
@@ -8,7 +10,7 @@ from rest_framework.response import Response
 
 from apps.accounts.models import UserProfile
 from apps.geography.models import Level
-from apps.heroes.models import HeroCard
+from apps.heroes.models import Hero, HeroCard
 
 from .models import PlayerProgress
 from .serializers import (
@@ -16,6 +18,16 @@ from .serializers import (
     CompleteLevelSerializer,
     PlayerProgressSerializer,
 )
+
+# Chance (par chapitre reussi) de recevoir en bonus un heros non lie a un
+# chapitre precis. Verifiees de la plus rare a la plus commune : un heros
+# legendaire reste volontairement difficile a obtenir.
+BONUS_HERO_DROP_RATES = {
+    "legendary": 0.05,
+    "epic": 0.15,
+    "rare": 0.30,
+    "common": 0.60,
+}
 
 
 class PlayerProgressViewSet(viewsets.ReadOnlyModelViewSet):
@@ -76,6 +88,9 @@ class PlayerProgressViewSet(viewsets.ReadOnlyModelViewSet):
                 if created:
                     hero_unlocked = level.unlocks_hero
 
+            if hero_unlocked is None:
+                hero_unlocked = self._roll_bonus_hero(profile)
+
         result = CompleteLevelResultSerializer(
             {
                 "progress": progress,
@@ -87,3 +102,24 @@ class PlayerProgressViewSet(viewsets.ReadOnlyModelViewSet):
             context={"profile": profile},
         )
         return Response(result.data)
+
+    @staticmethod
+    def _roll_bonus_hero(profile):
+        """
+        Tire au sort un heros 'bonus' (non lie a un chapitre precis) a
+        ajouter a la collection du joueur. Les raretes sont testees de la
+        plus rare a la plus commune ; des qu'un tirage reussit et qu'un
+        heros de cette rarete reste a debloquer, il est accorde.
+        """
+        owned_ids = HeroCard.objects.filter(profile=profile).values_list("hero_id", flat=True)
+        for rarity, chance in BONUS_HERO_DROP_RATES.items():
+            if random.random() > chance:
+                continue
+            candidates = list(
+                Hero.objects.filter(rarity=rarity, unlocked_by_levels__isnull=True).exclude(id__in=owned_ids)
+            )
+            if candidates:
+                hero = random.choice(candidates)
+                HeroCard.objects.create(profile=profile, hero=hero)
+                return hero
+        return None

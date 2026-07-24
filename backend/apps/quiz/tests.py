@@ -85,14 +85,14 @@ class TestSubmitAnswer:
 
 @pytest.fixture
 def level_with_pool(db):
-    """Un chapitre avec 3 questions dediees + 40 questions generales (sans niveau ni departement)."""
+    """Un chapitre avec 3 questions dediees + 55 questions generales (sans niveau ni departement)."""
     category = Category.objects.create(name="Histoire", slug="histoire")
     department = Department.objects.create(name="Ouest", slug="ouest", code="OU")
     level = Level.objects.create(department=department, order=1, name="Les origines")
 
     for i in range(3):
         Question.objects.create(category=category, level=level, department=department, text=f"Question niveau {i}")
-    for i in range(40):
+    for i in range(55):
         Question.objects.create(category=category, text=f"Question generale {i}")
 
     return level
@@ -100,9 +100,15 @@ def level_with_pool(db):
 
 @pytest.mark.django_db
 class TestQuestionSession:
-    def test_caps_at_30_questions(self, auth_client, level_with_pool):
+    def test_caps_at_50_questions_for_a_level(self, auth_client, level_with_pool):
         client, _ = auth_client
         response = client.get(f"/api/v1/quiz/questions/session/?level={level_with_pool.id}")
+        assert response.status_code == 200
+        assert len(response.data) == 50
+
+    def test_caps_at_30_questions_without_a_level(self, auth_client, level_with_pool):
+        client, _ = auth_client
+        response = client.get("/api/v1/quiz/questions/session/")
         assert response.status_code == 200
         assert len(response.data) == 30
 
@@ -118,9 +124,3 @@ class TestQuestionSession:
         first = [q["id"] for q in client.get(f"/api/v1/quiz/questions/session/?level={level_with_pool.id}").data]
         second = [q["id"] for q in client.get(f"/api/v1/quiz/questions/session/?level={level_with_pool.id}").data]
         assert first != second
-
-    def test_without_level_uses_full_active_pool(self, auth_client, level_with_pool):
-        client, _ = auth_client
-        response = client.get("/api/v1/quiz/questions/session/")
-        assert response.status_code == 200
-        assert len(response.data) == 30

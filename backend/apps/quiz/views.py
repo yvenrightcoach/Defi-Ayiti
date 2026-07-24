@@ -36,24 +36,27 @@ class QuestionViewSet(viewsets.ReadOnlyModelViewSet):
     filterset_fields = ["category", "department", "level", "difficulty", "question_type"]
     queryset = Question.objects.filter(is_active=True).select_related("category").prefetch_related("answers")
 
-    MAX_SESSION_QUESTIONS = 30
+    MAX_LEVEL_SESSION_QUESTIONS = 50
+    MAX_GENERAL_SESSION_QUESTIONS = 30
 
     @action(detail=False, methods=["get"])
     def session(self, request):
         """
-        Tire jusqu'a 30 questions aleatoires pour une session de jeu (quiz
-        d'un chapitre ou quiz rapide) : l'ordre et la selection changent a
-        chaque appel, pour plus de difficulte et de rejouabilite.
+        Tire des questions aleatoires pour une session de jeu : l'ordre et la
+        selection changent a chaque appel, pour plus de difficulte et de
+        rejouabilite. Un chapitre d'aventure (parametre 'level') tire jusqu'a
+        50 questions ; un quiz rapide ou une battle en tire jusqu'a 30.
 
         Avec un niveau precise, combine les questions propres a ce chapitre
         et les questions generales (sans niveau ni departement), pour offrir
         un vrai brassage meme sur les chapitres a faible effectif.
         """
         level_id = request.query_params.get("level")
+        max_allowed = self.MAX_LEVEL_SESSION_QUESTIONS if level_id else self.MAX_GENERAL_SESSION_QUESTIONS
         try:
-            limit = min(int(request.query_params.get("limit", self.MAX_SESSION_QUESTIONS)), self.MAX_SESSION_QUESTIONS)
+            limit = min(int(request.query_params.get("limit", max_allowed)), max_allowed)
         except ValueError:
-            limit = self.MAX_SESSION_QUESTIONS
+            limit = max_allowed
 
         qs = self.get_queryset()
         if level_id:
