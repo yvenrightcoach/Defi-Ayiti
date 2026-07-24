@@ -8,7 +8,10 @@
   }
 
   body {
-    @apply font-body bg-slate-50 text-slate-800;
+    /* Toute l'app utilise la police "cartoon" (Baloo 2), pas seulement
+       les titres -- c'est ce look partout (boutons, labels, paragraphes)
+       qui donne l'effet dessin anime demande, pas juste les gros titres. */
+    @apply font-display bg-slate-50 text-slate-800;
     /* Evite le bounce/zoom disgracieux sur mobile en mode PWA installee */
     overscroll-behavior-y: none;
     -webkit-tap-highlight-color: transparent;
