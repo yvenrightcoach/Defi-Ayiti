@@ -20,6 +20,21 @@ from apps.quiz.models import Answer, Category, Question
 LEVEL_QUESTION_COUNT = 50
 LEVEL_REQUIRED_SCORE = 90
 
+# Ordre d'apparition des departements sur la carte d'aventure : la carte
+# commence par les Nippes et se termine par Artibonite, Nord puis Ouest.
+DEPARTMENT_ORDER = {
+    "nippes": 1,
+    "nord-est": 2,
+    "nord-ouest": 3,
+    "centre": 4,
+    "sud": 5,
+    "sud-est": 6,
+    "grand-anse": 7,
+    "artibonite": 8,
+    "nord": 9,
+    "ouest": 10,
+}
+
 CATEGORIES = [
     {
         "slug": "histoire",
@@ -307,6 +322,18 @@ HEROES = [
         "quote": "",
         "rarity": "common",
         "order": 19,
+    },
+    {
+        "slug": "jovenel-moise",
+        "name": "Jovenel Moise",
+        "biography": (
+            "Entrepreneur agricole devenu president d'Haiti de 2017 a 2021, il "
+            "est assassine a son domicile le 7 juillet 2021, un evenement qui "
+            "marque profondement l'histoire recente du pays."
+        ),
+        "quote": "",
+        "rarity": "legendary",
+        "order": 20,
     },
 ]
 
@@ -1272,6 +1299,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         categories = self._seed_categories()
         heroes = self._seed_heroes()
+        self._sync_department_order()
         question_count = 0
         level_count = 0
 
@@ -1344,6 +1372,12 @@ class Command(BaseCommand):
             )
             heroes[data["slug"]] = hero
         return heroes
+
+    def _sync_department_order(self) -> None:
+        """Applique DEPARTMENT_ORDER a chaque run, pour reordonner la carte
+        d'aventure meme sur des departements deja semes."""
+        for slug, order in DEPARTMENT_ORDER.items():
+            Department.objects.filter(slug=slug).update(order=order)
 
     def _seed_questions(self, question_list, categories, *, level, department) -> int:
         created_count = 0
