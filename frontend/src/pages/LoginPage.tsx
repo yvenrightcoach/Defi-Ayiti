@@ -107,7 +107,7 @@ export default function LoginPage() {
         className="relative z-10 w-full max-w-sm text-center"
       >
         <Mascot className="mx-auto h-32 w-32 animate-float drop-shadow-xl" />
-        <h1 className="mt-1 text-center font-display text-4xl font-extrabold drop-shadow-sm">Defi Ayiti</h1>
+        <h1 className="text-toon mt-1 text-center text-5xl">Defi Ayiti</h1>
         <p className="mt-1 text-center font-display text-lg text-haiti-yellow">
           Connecte-toi pour commencer l'aventure
         </p>

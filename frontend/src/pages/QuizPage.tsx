@@ -201,7 +201,7 @@ function FinishScreen({
         className="relative z-10 w-full max-w-sm"
       >
         <Mascot className={`mx-auto h-24 w-24 drop-shadow-xl ${passed ? "animate-float" : ""}`} />
-        <h1 className="text-3xl font-display">{passed ? "Bravo !" : "Presque !"}</h1>
+        <h1 className="text-toon text-4xl">{passed ? "Bravo !" : "Presque !"}</h1>
         <p className="mt-2 text-haiti-yellow">
           {correctCount}/{total} bonnes reponses
         </p>

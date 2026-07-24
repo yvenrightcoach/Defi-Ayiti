@@ -17,7 +17,10 @@
   h1,
   h2,
   h3 {
-    @apply font-display;
+    @apply font-display font-extrabold tracking-wide;
+    /* Petit relief "autocollant" façon dessin anime, sans depasser sur le
+       texte (contrairement a un box-shadow, ne casse pas la mise en page). */
+    text-shadow: 2px 2px 0 rgba(0, 38, 90, 0.12);
   }
 }
 
@@ -90,5 +93,15 @@
   .tile-game-yellow {
     @apply tile-game bg-haiti-yellow text-haiti-blue shadow-[0_5px_0_0_theme(colors.haiti.yellowDark)]
       active:shadow-[0_1px_0_0_theme(colors.haiti.yellowDark)];
+  }
+
+  /* Titre "logo" façon BD/dessin anime : contour epais + relief marque.
+     Reserve aux gros titres (ecran de connexion, ecrans de victoire) --
+     trop lourd pour du texte courant. */
+  .text-toon {
+    @apply font-display font-extrabold text-white;
+    -webkit-text-stroke: 2px theme(colors.haiti.blueDark);
+    paint-order: stroke fill;
+    text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.25);
   }
 }
