@@ -8,11 +8,14 @@ import { useCountUp } from "@/hooks/useCountUp";
 import { LEAGUE_COLORS, LEAGUE_LABELS } from "@/lib/leagues";
 import { useAuthStore } from "@/store/authStore";
 import { useProfileStore } from "@/store/profileStore";
+import { useSoundStore } from "@/store/soundStore";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
   const { profile, isLoading, refresh } = useProfileStore();
+  const soundEnabled = useSoundStore((state) => state.enabled);
+  const toggleSound = useSoundStore((state) => state.toggle);
 
   useEffect(() => {
     void refresh();
@@ -80,7 +83,24 @@ export default function ProfilePage() {
         </p>
       </div>
 
-      <button type="button" onClick={handleLogout} className="btn-game-secondary mt-6 w-full">
+      <button
+        type="button"
+        onClick={toggleSound}
+        className="card-game mt-4 flex w-full items-center justify-between text-left"
+      >
+        <span className="font-display text-slate-700">
+          {soundEnabled ? "🔊 Sons actives" : "🔇 Sons desactives"}
+        </span>
+        <span
+          className={`flex h-7 w-12 items-center rounded-pill p-1 transition-colors ${
+            soundEnabled ? "justify-end bg-haiti-green" : "justify-start bg-slate-300"
+          }`}
+        >
+          <span className="h-5 w-5 rounded-full bg-white shadow" />
+        </span>
+      </button>
+
+      <button type="button" onClick={handleLogout} className="btn-game-secondary mt-4 w-full">
         Se deconnecter
       </button>
     </section>

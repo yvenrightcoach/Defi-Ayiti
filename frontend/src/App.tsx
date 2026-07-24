@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
+import { useGlobalClickSound } from "@/hooks/useGlobalClickSound";
 import AppLayout from "@/components/layout/AppLayout";
 import AdventureMapPage from "@/pages/AdventureMapPage";
 import BattlePage from "@/pages/BattlePage";
@@ -13,6 +14,8 @@ import ProfilePage from "@/pages/ProfilePage";
 import QuizPage from "@/pages/QuizPage";
 
 export default function App() {
+  useGlobalClickSound();
+
   return (
     <Routes>
       <Route path="/connexion" element={<LoginPage />} />

@@ -10,6 +10,7 @@ import Mascot from "@/components/ui/Mascot";
 import QuestionCard from "@/features/quiz/QuestionCard";
 import { useCountUp } from "@/hooks/useCountUp";
 import { getErrorMessage } from "@/lib/errors";
+import { playCorrect, playSuccess, playUnlock, playWrong } from "@/lib/sound";
 import { completeLevel } from "@/services/endpoints/progress";
 import { listQuestions, submitAnswer } from "@/services/endpoints/quiz";
 import { useProfileStore } from "@/store/profileStore";
@@ -71,6 +72,9 @@ export default function QuizPage() {
       if (res.is_correct) {
         setCorrectCount((c) => c + 1);
         setTotalXp((xp) => xp + res.xp_awarded);
+        playCorrect();
+      } else {
+        playWrong();
       }
     } catch (err) {
       setError(getErrorMessage(err, "Impossible d'envoyer ta reponse."));
@@ -187,6 +191,15 @@ function FinishScreen({
   const heroUnlocked = levelResult?.hero_unlocked ?? null;
   const xpDisplay = useCountUp(levelResult?.xp_awarded ?? totalXp);
   const coinDisplay = useCountUp(levelResult?.coin_awarded ?? 0);
+
+  useEffect(() => {
+    if (heroUnlocked) {
+      playUnlock();
+    } else if (passed) {
+      playSuccess();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <section className="relative flex min-h-screen flex-col items-center justify-center gap-4 p-6 text-center text-white">

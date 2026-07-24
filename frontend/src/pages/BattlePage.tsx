@@ -5,6 +5,7 @@ import ErrorMessage from "@/components/ui/ErrorMessage";
 import Loader from "@/components/ui/Loader";
 import QuestionCard from "@/features/quiz/QuestionCard";
 import { getErrorMessage } from "@/lib/errors";
+import { playCorrect, playSuccess, playWrong } from "@/lib/sound";
 import {
   createRoom,
   finishMatch,
@@ -47,6 +48,10 @@ export default function BattlePage() {
       if (pollRef.current) window.clearInterval(pollRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (step === "finished") playSuccess();
+  }, [step]);
 
   function startPolling(roomId: string) {
     if (pollRef.current) window.clearInterval(pollRef.current);
@@ -139,7 +144,12 @@ export default function BattlePage() {
     try {
       const res = await submitAnswer(question.id, selectedIds);
       setResult(res);
-      if (res.is_correct) setCorrectCount((c) => c + 1);
+      if (res.is_correct) {
+        setCorrectCount((c) => c + 1);
+        playCorrect();
+      } else {
+        playWrong();
+      }
     } catch (err) {
       setError(getErrorMessage(err, "Impossible d'envoyer ta reponse."));
     } finally {
