@@ -315,7 +315,12 @@ REST_AUTH = {
     # cookie configure -- il faut le desactiver explicitement puisque le
     # frontend garde le refresh token cote client, pas dans un cookie.
     "JWT_AUTH_HTTPONLY": False,
+    # Lien de reinitialisation pointant vers une page du frontend (SPA) au
+    # lieu d'une vue Django server-side qui n'existe pas ici.
+    "PASSWORD_RESET_SERIALIZER": "apps.accounts.serializers.CustomPasswordResetSerializer",
 }
+
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="no-reply@defi-ayiti.app")
 
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
@@ -337,7 +342,7 @@ SOCIALACCOUNT_PROVIDERS = {
     },
 }
 
-GUEST_MODE_ENABLED = env.bool("GUEST_MODE_ENABLED", default=True)
+GUEST_MODE_ENABLED = env.bool("GUEST_MODE_ENABLED", default=False)
 
 # ---------------------------------------------------------------------------
 # CORS — communication avec le frontend React (Vite/PWA)

@@ -13,6 +13,7 @@ import LeaderboardPage from "@/pages/LeaderboardPage";
 import LoginPage from "@/pages/LoginPage";
 import ProfilePage from "@/pages/ProfilePage";
 import QuizPage from "@/pages/QuizPage";
+import ResetPasswordPage from "@/pages/ResetPasswordPage";
 
 export default function App() {
   useGlobalClickSound();
@@ -22,6 +23,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/connexion" element={<LoginPage />} />
+      <Route path="/reinitialiser-mot-de-passe" element={<ResetPasswordPage />} />
 
       <Route element={<AppLayout />}>
         <Route path="/" element={<HomePage />} />

@@ -2,6 +2,7 @@ from datetime import timedelta
 from unittest.mock import patch
 
 import pytest
+from django.core import mail
 from django.core.management import call_command
 from django.urls import reverse
 from django.utils import timezone
@@ -101,6 +102,43 @@ class TestConvertDiamondsToCoins:
     def test_requires_authentication(self, api_client):
         response = api_client.post("/api/v1/auth/me/convert-diamonds/", {"diamonds": 5})
         assert response.status_code == 401
+
+
+@pytest.mark.django_db
+class TestPasswordReset:
+    def test_sends_reset_email_with_frontend_link(self, api_client, settings):
+        settings.FRONTEND_URL = "https://defi-ayiti-app.onrender.com"
+        User.objects.create_user(username="joueur1", email="joueur1@test.local", password="pass1234")
+
+        response = api_client.post("/api/v1/auth/password/reset/", {"email": "joueur1@test.local"})
+
+        assert response.status_code == 200
+        assert len(mail.outbox) == 1
+        body = mail.outbox[0].body
+        assert "https://defi-ayiti-app.onrender.com/reinitialiser-mot-de-passe?uid=" in body
+        assert "token=" in body
+
+    def test_unknown_email_returns_200_without_sending_anything(self, api_client):
+        response = api_client.post("/api/v1/auth/password/reset/", {"email": "personne@test.local"})
+
+        assert response.status_code == 200
+        assert len(mail.outbox) == 0
+
+    def test_confirm_with_valid_link_changes_the_password(self, api_client):
+        user = User.objects.create_user(username="joueur1", email="joueur1@test.local", password="old-password")
+        api_client.post("/api/v1/auth/password/reset/", {"email": "joueur1@test.local"})
+        body = mail.outbox[0].body
+        uid = body.split("uid=")[1].split("&")[0]
+        token = body.split("token=")[1].split("\n")[0].strip()
+
+        response = api_client.post(
+            "/api/v1/auth/password/reset/confirm/",
+            {"uid": uid, "token": token, "new_password1": "new-password123", "new_password2": "new-password123"},
+        )
+
+        assert response.status_code == 200
+        user.refresh_from_db()
+        assert user.check_password("new-password123")
 
 
 @pytest.mark.django_db

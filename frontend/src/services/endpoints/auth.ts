@@ -1,17 +1,6 @@
 import { apiClient } from "@/services/apiClient";
 import type { ConvertDiamondsResult, UserProfile } from "@/types/api";
 
-export interface GuestLoginResponse {
-  access: string;
-  refresh: string;
-  user: { id: string; username: string; is_guest: boolean };
-}
-
-export async function guestLogin(): Promise<GuestLoginResponse> {
-  const { data } = await apiClient.post<GuestLoginResponse>("/auth/guest/");
-  return data;
-}
-
 export interface EmailLoginResponse {
   access: string;
   refresh: string;
@@ -51,4 +40,22 @@ export async function searchProfiles(search: string): Promise<UserProfile[]> {
 export async function convertDiamondsToCoins(diamonds: number): Promise<ConvertDiamondsResult> {
   const { data } = await apiClient.post<ConvertDiamondsResult>("/auth/me/convert-diamonds/", { diamonds });
   return data;
+}
+
+export async function requestPasswordReset(email: string): Promise<void> {
+  await apiClient.post("/auth/password/reset/", { email });
+}
+
+export async function confirmPasswordReset(
+  uid: string,
+  token: string,
+  newPassword1: string,
+  newPassword2: string,
+): Promise<void> {
+  await apiClient.post("/auth/password/reset/confirm/", {
+    uid,
+    token,
+    new_password1: newPassword1,
+    new_password2: newPassword2,
+  });
 }

@@ -1,4 +1,7 @@
 """Serializers DRF de l'app 'accounts'."""
+from allauth.account.utils import user_pk_to_url_str
+from dj_rest_auth.serializers import PasswordResetSerializer
+from django.conf import settings
 from rest_framework import serializers
 
 from apps.geography.serializers import DepartmentSerializer
@@ -59,3 +62,21 @@ class ConvertDiamondsSerializer(serializers.Serializer):
 class ConvertDiamondsResultSerializer(serializers.Serializer):
     coins = serializers.IntegerField()
     diamonds = serializers.IntegerField()
+
+
+def _frontend_reset_url(_request, user, temp_key) -> str:
+    """
+    Remplace dj-rest-auth/allauth.forms.default_url_generator, qui pointe par
+    defaut vers l'URL Django nommee 'password_reset_confirm' -- absente ici
+    (seules allauth.socialaccount.urls sont montees, pas allauth.account.urls)
+    -- par une page du frontend (SPA) qui appelle /auth/password/reset/confirm/.
+    """
+    uid = user_pk_to_url_str(user)
+    return f"{settings.FRONTEND_URL}/reinitialiser-mot-de-passe?uid={uid}&token={temp_key}"
+
+
+class CustomPasswordResetSerializer(PasswordResetSerializer):
+    """Envoie un email de reinitialisation dont le lien pointe vers le frontend."""
+
+    def get_email_options(self):
+        return {"url_generator": _frontend_reset_url}

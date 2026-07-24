@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Navigate, useNavigate } from "react-router-dom";
 
-import { emailLogin, emailRegister, guestLogin } from "@/services/endpoints/auth";
+import { emailLogin, emailRegister, requestPasswordReset } from "@/services/endpoints/auth";
 import { getErrorMessage } from "@/lib/errors";
 import { useAuthStore } from "@/store/authStore";
 import Mascot from "@/components/ui/Mascot";
@@ -12,41 +12,25 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const accessToken = useAuthStore((state) => state.accessToken);
   const setSession = useAuthStore((state) => state.setSession);
-  const [mode, setMode] = useState<"login" | "register">("login");
+  const [mode, setMode] = useState<"login" | "register" | "forgot">("login");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
-  const [loadingAction, setLoadingAction] = useState<"guest" | "email" | null>(null);
+  const [loadingAction, setLoadingAction] = useState<"email" | "forgot" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [forgotSent, setForgotSent] = useState(false);
 
   if (accessToken) {
     return <Navigate to="/" replace />;
   }
 
-  function switchMode(nextMode: "login" | "register") {
+  function switchMode(nextMode: "login" | "register" | "forgot") {
     setMode(nextMode);
     setError(null);
     setPassword("");
     setPassword2("");
-  }
-
-  async function handleGuestLogin() {
-    setError(null);
-    setLoadingAction("guest");
-    try {
-      const { access, refresh, user } = await guestLogin();
-      setSession({
-        accessToken: access,
-        refreshToken: refresh,
-        user: { id: user.id, username: user.username, isGuest: user.is_guest },
-      });
-      navigate("/", { replace: true });
-    } catch (err) {
-      setError(getErrorMessage(err, "Impossible de creer une session invite pour le moment."));
-    } finally {
-      setLoadingAction(null);
-    }
+    setForgotSent(false);
   }
 
   async function handleEmailLogin(event: React.FormEvent) {
@@ -96,6 +80,20 @@ export default function LoginPage() {
     }
   }
 
+  async function handleForgotPassword(event: React.FormEvent) {
+    event.preventDefault();
+    setError(null);
+    setLoadingAction("forgot");
+    try {
+      await requestPasswordReset(email);
+      setForgotSent(true);
+    } catch (err) {
+      setError(getErrorMessage(err, "Impossible d'envoyer l'email pour le moment."));
+    } finally {
+      setLoadingAction(null);
+    }
+  }
+
   return (
     <section className="relative flex min-h-screen flex-col items-center justify-center gap-6 p-6 text-white">
       <AnimatedBackground variant="dark" />
@@ -119,84 +117,125 @@ export default function LoginPage() {
         transition={{ duration: 0.35, delay: 0.15 }}
         className="relative z-10 w-full max-w-sm"
       >
-        <button
-          type="button"
-          onClick={handleGuestLogin}
-          disabled={loadingAction !== null}
-          className="btn-game-primary mb-4 w-full disabled:opacity-60"
-        >
-          {loadingAction === "guest" ? "Creation..." : "Jouer en mode invite"}
-        </button>
+        {mode === "forgot" ? (
+          forgotSent ? (
+            <div className="card-game space-y-3 text-center text-slate-800">
+              <p>
+                Si un compte existe avec l'adresse <strong>{email}</strong>, un email de reinitialisation vient
+                d'etre envoye.
+              </p>
+              <button type="button" onClick={() => switchMode("login")} className="btn-game-secondary w-full">
+                Retour a la connexion
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleForgotPassword} className="card-game space-y-3 text-slate-800">
+              <p className="text-sm text-slate-500">
+                Entre l'adresse email de ton compte, on t'envoie un lien pour choisir un nouveau mot de passe.
+              </p>
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full rounded-pill border border-slate-200 px-4 py-2 outline-none focus:border-haiti-blue"
+                required
+              />
+              <button
+                type="submit"
+                disabled={loadingAction !== null}
+                className="btn-game-primary w-full disabled:opacity-60"
+              >
+                {loadingAction === "forgot" ? "Envoi..." : "Envoyer le lien"}
+              </button>
+              <button
+                type="button"
+                onClick={() => switchMode("login")}
+                disabled={loadingAction !== null}
+                className="w-full text-center text-sm text-slate-500 underline-offset-2 hover:underline"
+              >
+                Retour a la connexion
+              </button>
+            </form>
+          )
+        ) : (
+          <>
+            <form
+              onSubmit={mode === "login" ? handleEmailLogin : handleRegister}
+              className="card-game space-y-3 text-slate-800"
+            >
+              <input
+                type="text"
+                placeholder="Nom d'utilisateur"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full rounded-pill border border-slate-200 px-4 py-2 outline-none focus:border-haiti-blue"
+                required
+              />
+              {mode === "register" && (
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full rounded-pill border border-slate-200 px-4 py-2 outline-none focus:border-haiti-blue"
+                  required
+                />
+              )}
+              <input
+                type="password"
+                placeholder="Mot de passe"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-pill border border-slate-200 px-4 py-2 outline-none focus:border-haiti-blue"
+                required
+              />
+              {mode === "register" && (
+                <input
+                  type="password"
+                  placeholder="Confirmer le mot de passe"
+                  value={password2}
+                  onChange={(e) => setPassword2(e.target.value)}
+                  className="w-full rounded-pill border border-slate-200 px-4 py-2 outline-none focus:border-haiti-blue"
+                  required
+                />
+              )}
+              <button
+                type="submit"
+                disabled={loadingAction !== null}
+                className="btn-game-secondary w-full disabled:opacity-60"
+              >
+                {loadingAction === "email"
+                  ? mode === "login"
+                    ? "Connexion..."
+                    : "Creation..."
+                  : mode === "login"
+                    ? "Se connecter"
+                    : "Creer mon compte"}
+              </button>
+            </form>
 
-        <div className="mb-4 flex items-center gap-3 text-white/60">
-          <span className="h-px flex-1 bg-white/20" />
-          <span className="text-xs">ou avec un compte</span>
-          <span className="h-px flex-1 bg-white/20" />
-        </div>
+            {mode === "login" && (
+              <button
+                type="button"
+                onClick={() => switchMode("forgot")}
+                disabled={loadingAction !== null}
+                className="mt-3 w-full text-center text-sm text-white/80 underline-offset-2 hover:underline disabled:opacity-60"
+              >
+                Mot de passe oublie ?
+              </button>
+            )}
 
-        <form
-          onSubmit={mode === "login" ? handleEmailLogin : handleRegister}
-          className="card-game space-y-3 text-slate-800"
-        >
-          <input
-            type="text"
-            placeholder="Nom d'utilisateur"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full rounded-pill border border-slate-200 px-4 py-2 outline-none focus:border-haiti-blue"
-            required
-          />
-          {mode === "register" && (
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-pill border border-slate-200 px-4 py-2 outline-none focus:border-haiti-blue"
-              required
-            />
-          )}
-          <input
-            type="password"
-            placeholder="Mot de passe"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-pill border border-slate-200 px-4 py-2 outline-none focus:border-haiti-blue"
-            required
-          />
-          {mode === "register" && (
-            <input
-              type="password"
-              placeholder="Confirmer le mot de passe"
-              value={password2}
-              onChange={(e) => setPassword2(e.target.value)}
-              className="w-full rounded-pill border border-slate-200 px-4 py-2 outline-none focus:border-haiti-blue"
-              required
-            />
-          )}
-          <button
-            type="submit"
-            disabled={loadingAction !== null}
-            className="btn-game-secondary w-full disabled:opacity-60"
-          >
-            {loadingAction === "email"
-              ? mode === "login"
-                ? "Connexion..."
-                : "Creation..."
-              : mode === "login"
-                ? "Se connecter"
-                : "Creer mon compte"}
-          </button>
-        </form>
-
-        <button
-          type="button"
-          onClick={() => switchMode(mode === "login" ? "register" : "login")}
-          disabled={loadingAction !== null}
-          className="mt-3 w-full text-center text-sm text-white/80 underline-offset-2 hover:underline disabled:opacity-60"
-        >
-          {mode === "login" ? "Pas de compte ? Inscris-toi" : "Deja un compte ? Connecte-toi"}
-        </button>
+            <button
+              type="button"
+              onClick={() => switchMode(mode === "login" ? "register" : "login")}
+              disabled={loadingAction !== null}
+              className="mt-3 w-full text-center text-sm text-white/80 underline-offset-2 hover:underline disabled:opacity-60"
+            >
+              {mode === "login" ? "Pas de compte ? Inscris-toi" : "Deja un compte ? Connecte-toi"}
+            </button>
+          </>
+        )}
 
         {error && <p className="mt-4 text-center text-sm text-haiti-yellow">{error}</p>}
 
