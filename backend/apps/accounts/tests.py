@@ -126,18 +126,31 @@ class TestEnsureAdminCommand:
 
         assert User.objects.count() == 0
 
-    def test_does_not_recreate_or_reset_existing_admin(self, monkeypatch):
+    def test_does_not_duplicate_the_account_on_repeated_runs(self, monkeypatch):
         monkeypatch.setenv("ADMIN_USERNAME", "root")
         monkeypatch.setenv("ADMIN_EMAIL", "root@defi-ayiti.local")
         monkeypatch.setenv("ADMIN_PASSWORD", "first-password")
         call_command("ensure_admin")
 
-        monkeypatch.setenv("ADMIN_PASSWORD", "second-password")
         call_command("ensure_admin")
 
         assert User.objects.filter(username="root").count() == 1
+
+    def test_resyncs_password_and_email_on_existing_account(self, monkeypatch):
+        monkeypatch.setenv("ADMIN_USERNAME", "root")
+        monkeypatch.setenv("ADMIN_EMAIL", "root@defi-ayiti.local")
+        monkeypatch.setenv("ADMIN_PASSWORD", "first-password")
+        call_command("ensure_admin")
+
+        monkeypatch.setenv("ADMIN_EMAIL", "new-root@defi-ayiti.local")
+        monkeypatch.setenv("ADMIN_PASSWORD", "second-password")
+        call_command("ensure_admin")
+
         admin = User.objects.get(username="root")
-        assert admin.check_password("first-password")
+        assert admin.check_password("second-password")
+        assert admin.email == "new-root@defi-ayiti.local"
+        assert admin.is_superuser is True
+        assert admin.is_staff is True
 
 
 @pytest.mark.django_db

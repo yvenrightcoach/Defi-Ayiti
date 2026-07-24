@@ -1,10 +1,11 @@
 """
-Cree le compte super admin s'il n'existe pas encore, a partir de variables
+Cree ou resynchronise le compte super admin a partir de variables
 d'environnement. Concu pour tourner a chaque deploiement (build command),
 car le plan gratuit de Render n'offre pas d'acces Shell pour lancer
-`createsuperuser` a la main. Ne fait rien si les variables sont absentes ou
-si le compte existe deja (idempotent, ne touche jamais un mot de passe
-existant).
+`createsuperuser`/`changepassword` a la main. Le mot de passe et l'email
+sont resynchronises a chaque run : si les variables d'environnement
+changent sur Render, le compte suit -- pas besoin de supprimer l'ancien
+compte pour corriger un mot de passe errone.
 """
 import os
 
@@ -13,7 +14,7 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    help = "Cree le compte super admin depuis ADMIN_USERNAME/ADMIN_EMAIL/ADMIN_PASSWORD si absent."
+    help = "Cree/resynchronise le compte super admin depuis ADMIN_USERNAME/ADMIN_EMAIL/ADMIN_PASSWORD."
 
     def handle(self, *args, **options):
         username = os.environ.get("ADMIN_USERNAME")
@@ -25,9 +26,16 @@ class Command(BaseCommand):
             return
 
         User = get_user_model()
-        if User.objects.filter(username=username).exists():
-            self.stdout.write(f"Super admin '{username}' deja present, aucune action.")
-            return
+        admin, created = User.objects.get_or_create(
+            username=username, defaults={"email": email, "is_staff": True, "is_superuser": True}
+        )
+        admin.email = email
+        admin.is_staff = True
+        admin.is_superuser = True
+        admin.set_password(password)
+        admin.save()
 
-        User.objects.create_superuser(username=username, email=email, password=password)
-        self.stdout.write(self.style.SUCCESS(f"Super admin '{username}' cree."))
+        if created:
+            self.stdout.write(self.style.SUCCESS(f"Super admin '{username}' cree."))
+        else:
+            self.stdout.write(self.style.SUCCESS(f"Super admin '{username}' resynchronise."))
