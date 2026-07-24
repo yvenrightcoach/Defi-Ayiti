@@ -1,11 +1,20 @@
 """
-Cree ou resynchronise le compte super admin a partir de variables
-d'environnement. Concu pour tourner a chaque deploiement (build command),
-car le plan gratuit de Render n'offre pas d'acces Shell pour lancer
-`createsuperuser`/`changepassword` a la main. Le mot de passe et l'email
-sont resynchronises a chaque run : si les variables d'environnement
-changent sur Render, le compte suit -- pas besoin de supprimer l'ancien
-compte pour corriger un mot de passe errone.
+Cree ou resynchronise LE compte super admin (un seul, celui declare par les
+variables d'environnement) a partir de ADMIN_USERNAME/ADMIN_EMAIL/
+ADMIN_PASSWORD. Concu pour tourner a chaque deploiement (build command), car
+le plan gratuit de Render n'offre pas d'acces Shell pour lancer
+`createsuperuser`/`changepassword` a la main.
+
+Comportement :
+- Le mot de passe et l'email sont resynchronises a chaque run : changer les
+  variables sur Render suffit, pas besoin de supprimer un compte a la main.
+- Tout AUTRE compte superutilisateur (cree lors d'un essai precedent, par
+  exemple sous un nom mal saisi) est supprime a chaque run : il n'existe
+  jamais qu'un seul compte super admin, celui qui correspond aux variables
+  actuelles.
+- Ne doit JAMAIS faire echouer le build : une erreur ici ne doit pas
+  empecher le reste de l'application de se deployer. Toute exception est
+  attrapee et seulement loguee.
 """
 import os
 
@@ -14,7 +23,7 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    help = "Cree/resynchronise le compte super admin depuis ADMIN_USERNAME/ADMIN_EMAIL/ADMIN_PASSWORD."
+    help = "Cree/resynchronise LE compte super admin depuis ADMIN_USERNAME/ADMIN_EMAIL/ADMIN_PASSWORD."
 
     def handle(self, *args, **options):
         username = os.environ.get("ADMIN_USERNAME")
@@ -25,13 +34,22 @@ class Command(BaseCommand):
             self.stdout.write("ADMIN_USERNAME/ADMIN_EMAIL/ADMIN_PASSWORD absents : super admin ignore.")
             return
 
+        try:
+            self._sync_admin(username, email, password)
+        except Exception as exc:  # noqa: BLE001 - ne doit jamais bloquer le build
+            self.stderr.write(self.style.ERROR(f"ensure_admin a echoue (build non bloque) : {exc!r}"))
+
+    def _sync_admin(self, username, email, password):
         User = get_user_model()
 
-        # Email est unique : si ADMIN_USERNAME a change d'un deploiement a
-        # l'autre (ex. "admin" -> "Admin"), l'ancien compte bootstrap garde
-        # cet email et ferait echouer la creation du nouveau avec un
-        # IntegrityError, plantant tout le build. On liberere donc l'email
-        # de tout compte qui ne correspond plus au username actuel.
+        # Un seul admin bootstrap a la fois : tout autre superutilisateur
+        # (cree lors d'un essai precedent, ex. mauvaise casse) est supprime.
+        deleted, _ = User.objects.filter(is_superuser=True).exclude(username=username).delete()
+        if deleted:
+            self.stdout.write(f"{deleted} ancien(s) compte(s) super admin supprime(s).")
+
+        # Email est unique : liberere celui d'un compte non-superadmin qui le
+        # detiendrait deja (evite un IntegrityError qui ferait echouer tout).
         for stale in User.objects.filter(email=email).exclude(username=username):
             stale.email = f"stale-admin-{stale.pk}@invalid.local"
             stale.save(update_fields=["email"])

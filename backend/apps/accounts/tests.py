@@ -151,8 +151,30 @@ class TestEnsureAdminCommand:
         assert new_admin.check_password("second-password")
         assert new_admin.is_superuser is True
 
-        old_admin = User.objects.get(username="admin")
-        assert old_admin.email != "admin@gesti.com"
+    def test_only_one_super_admin_account_ever_exists(self, monkeypatch):
+        monkeypatch.setenv("ADMIN_USERNAME", "first-try")
+        monkeypatch.setenv("ADMIN_EMAIL", "first@gesti.com")
+        monkeypatch.setenv("ADMIN_PASSWORD", "first-password")
+        call_command("ensure_admin")
+
+        monkeypatch.setenv("ADMIN_USERNAME", "superadmin")
+        monkeypatch.setenv("ADMIN_EMAIL", "superadmin@gesti.com")
+        monkeypatch.setenv("ADMIN_PASSWORD", "second-password")
+        call_command("ensure_admin")
+
+        assert User.objects.filter(is_superuser=True).count() == 1
+        assert not User.objects.filter(username="first-try").exists()
+        assert User.objects.filter(username="superadmin").exists()
+
+    def test_does_not_delete_non_superuser_accounts(self, monkeypatch):
+        User.objects.create_user(username="joueur1", email="joueur1@test.local", password="pass1234")
+
+        monkeypatch.setenv("ADMIN_USERNAME", "superadmin")
+        monkeypatch.setenv("ADMIN_EMAIL", "superadmin@gesti.com")
+        monkeypatch.setenv("ADMIN_PASSWORD", "second-password")
+        call_command("ensure_admin")
+
+        assert User.objects.filter(username="joueur1").exists()
 
     def test_resyncs_password_and_email_on_existing_account(self, monkeypatch):
         monkeypatch.setenv("ADMIN_USERNAME", "root")
