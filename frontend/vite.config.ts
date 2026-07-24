@@ -56,6 +56,17 @@ export default defineConfig({
               expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 },
             },
           },
+          {
+            // Fichiers audio (musique du menu ~5 Mo, effets courts) : pas
+            // precaches a l'installation (trop lourd), mais mis en cache
+            // des la premiere lecture pour ne plus jamais les retelecharger.
+            urlPattern: ({ url }) => url.pathname.startsWith("/sounds/"),
+            handler: "CacheFirst",
+            options: {
+              cacheName: "defi-ayiti-sounds-cache",
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
         ],
       },
     }),

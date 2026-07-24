@@ -1,9 +1,7 @@
 /**
- * Effets sonores synthetises en direct via l'API Web Audio -- pas de
- * fichiers audio a heberger/precacher, tout est genere a la volee.
- * L'AudioContext n'est cree qu'au premier son joue (regle d'autoplay des
- * navigateurs : il faut un geste utilisateur, ce que garantit l'appel
- * depuis un clic/une reponse de quiz).
+ * Sons du jeu : quelques effets synthetises en direct via l'API Web Audio
+ * (pas de fichier a charger), et de vrais fichiers audio pour la musique
+ * du menu et les reponses correctes/incorrectes.
  */
 
 type ToneType = OscillatorType;
@@ -21,6 +19,7 @@ let enabled = true;
 
 export function setSoundEnabled(value: boolean) {
   enabled = value;
+  if (!value) menuMusic?.pause();
 }
 
 function getContext(): AudioContext | null {
@@ -59,22 +58,71 @@ function playTones(tones: Tone[]) {
   }
 }
 
+// --- Fichiers audio (correct / faux / musique du menu) ---------------------
+
+const audioCache = new Map<string, HTMLAudioElement>();
+
+function getAudio(src: string): HTMLAudioElement {
+  let audio = audioCache.get(src);
+  if (!audio) {
+    audio = new Audio(src);
+    audio.preload = "auto";
+    audioCache.set(src, audio);
+  }
+  return audio;
+}
+
+function playFile(src: string, volume: number) {
+  if (!enabled) return;
+  const audio = getAudio(src);
+  audio.volume = volume;
+  audio.currentTime = 0;
+  void audio.play().catch(() => {
+    // Lecture bloquee (politique d'autoplay) : ignore silencieusement,
+    // le prochain geste utilisateur permettra de reessayer naturellement.
+  });
+}
+
+let menuMusic: HTMLAudioElement | null = null;
+
+/** Musique de fond de l'ecran de connexion/menu, en boucle. */
+export function playMenuMusic() {
+  if (!enabled) return;
+  if (!menuMusic) {
+    menuMusic = getAudio("/sounds/menu-theme.mp3");
+    menuMusic.loop = true;
+    menuMusic.volume = 0.35;
+  }
+  menuMusic.play().catch(() => {
+    // Autoplay bloque avant tout geste utilisateur : on retente au premier
+    // clic/touch, pattern standard pour la musique de fond.
+    const retry = () => {
+      void menuMusic?.play().catch(() => {});
+    };
+    document.addEventListener("click", retry, { once: true });
+    document.addEventListener("touchstart", retry, { once: true });
+  });
+}
+
+export function stopMenuMusic() {
+  if (!menuMusic) return;
+  menuMusic.pause();
+  menuMusic.currentTime = 0;
+}
+
 /** Petit clic doux, joue sur les boutons et tuiles de l'interface. */
 export function playClick() {
   playTones([{ freq: 720, start: 0, duration: 0.06, type: "sine", peak: 0.12 }]);
 }
 
-/** Carillon ascendant deux notes, reponse correcte. */
+/** Reponse correcte. */
 export function playCorrect() {
-  playTones([
-    { freq: 523.25, start: 0, duration: 0.12, type: "sine", peak: 0.22 },
-    { freq: 783.99, start: 0.1, duration: 0.18, type: "sine", peak: 0.2 },
-  ]);
+  playFile("/sounds/correct.mp3", 0.6);
 }
 
-/** Buzz grave court, mauvaise reponse. */
+/** Mauvaise reponse. */
 export function playWrong() {
-  playTones([{ freq: 160, start: 0, duration: 0.22, type: "sawtooth", peak: 0.15 }]);
+  playFile("/sounds/wrong.mp3", 0.5);
 }
 
 /** Fanfare courte (3 notes), fin de niveau/match reussie. */
@@ -83,14 +131,6 @@ export function playSuccess() {
     { freq: 523.25, start: 0, duration: 0.13, type: "triangle", peak: 0.22 },
     { freq: 659.25, start: 0.12, duration: 0.13, type: "triangle", peak: 0.22 },
     { freq: 987.77, start: 0.24, duration: 0.3, type: "triangle", peak: 0.24 },
-  ]);
-}
-
-/** Petit son "presque" doux et neutre, echec sans gravite. */
-export function playSoftFail() {
-  playTones([
-    { freq: 392, start: 0, duration: 0.15, type: "sine", peak: 0.15 },
-    { freq: 329.63, start: 0.13, duration: 0.2, type: "sine", peak: 0.15 },
   ]);
 }
 
