@@ -20,7 +20,7 @@ export default function AdBanner() {
   }, []);
 
   return (
-    <div className="mx-auto w-full max-w-md overflow-hidden">
+    <div className="mx-auto w-full max-w-md overflow-hidden bg-white/95 px-3 pt-2 backdrop-blur">
       <ins
         className="adsbygoogle"
         style={{ display: "block" }}

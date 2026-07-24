@@ -10,7 +10,7 @@ const NAV_ITEMS = [
 
 export default function BottomNav() {
   return (
-    <nav className="safe-area-bottom fixed inset-x-0 bottom-0 z-50 flex justify-center px-3 pb-3">
+    <nav className="safe-area-bottom flex justify-center px-3 pb-3">
       <div className="flex w-full max-w-md justify-around rounded-card border-2 border-slate-100 bg-white/95 px-1 py-2 shadow-card backdrop-blur">
         {NAV_ITEMS.map((item) => (
           <NavLink

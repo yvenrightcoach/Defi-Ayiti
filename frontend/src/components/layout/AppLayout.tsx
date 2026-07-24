@@ -16,11 +16,8 @@ export default function AppLayout() {
   }
 
   return (
-    <div className="min-h-screen pb-24">
+    <div className="min-h-screen pb-40">
       <AnimatedBackground variant="light" />
-      <div className="relative z-10 pt-2">
-        <AdBanner />
-      </div>
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.div
           key={location.pathname}
@@ -32,7 +29,10 @@ export default function AppLayout() {
           {element}
         </motion.div>
       </AnimatePresence>
-      <BottomNav />
+      <div className="fixed inset-x-0 bottom-0 z-50">
+        <AdBanner />
+        <BottomNav />
+      </div>
     </div>
   );
 }
