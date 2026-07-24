@@ -14,7 +14,14 @@ export function useGlobalClickSound() {
       const target = event.target as HTMLElement | null;
       const el = target?.closest<HTMLElement>("button, a");
       if (!el) return;
-      if ((el as HTMLButtonElement).disabled) return;
+      // Pas de verification "disabled" ici : un bouton deja desactive AVANT
+      // le clic ne declenche jamais d'evenement "click" natif (le
+      // navigateur ne le dispatche pas). La verifier quand meme est
+      // contre-productif, car de nombreux boutons se desactivent de facon
+      // synchrone des le clic (ex. setLoadingAction avant un appel reseau) --
+      // React re-rend avant que l'evenement natif ne remonte jusqu'a
+      // document, donc cette verification bloquait le son sur la plupart
+      // des boutons d'action.
       const className = typeof el.className === "string" ? el.className : "";
       if (className.includes("btn-game") || className.includes("tile-game")) {
         playClick();
