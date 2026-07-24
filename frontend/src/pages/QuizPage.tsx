@@ -222,6 +222,12 @@ function FinishScreen({
         <div className="card-game mt-4 text-slate-800">
           <p className="font-display text-haiti-blue">+{xpDisplay} XP</p>
           {levelResult && <p className="font-display text-haiti-blue">+{coinDisplay} pieces</p>}
+          {levelResult && levelResult.stake_refunded > 0 && (
+            <p className="mt-1 text-sm text-haiti-green">Mise recuperee : +{levelResult.stake_refunded} 🪙</p>
+          )}
+          {levelResult?.stake_lost && (
+            <p className="mt-1 text-sm text-haiti-red">Mise perdue, tente encore une fois !</p>
+          )}
         </div>
 
         {heroUnlocked && (

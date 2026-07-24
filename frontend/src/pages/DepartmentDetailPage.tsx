@@ -1,21 +1,33 @@
 import { useEffect, useState } from "react";
+import { isAxiosError } from "axios";
 import { motion } from "framer-motion";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import Loader from "@/components/ui/Loader";
 import { getErrorMessage } from "@/lib/errors";
+import { convertDiamondsToCoins } from "@/services/endpoints/auth";
 import { getDepartment } from "@/services/endpoints/geography";
-import { listProgress } from "@/services/endpoints/progress";
+import { listProgress, stakeLevel } from "@/services/endpoints/progress";
+import { useProfileStore } from "@/store/profileStore";
 import type { DepartmentDetail, Level, PlayerProgress } from "@/types/api";
+
+const DIAMOND_TO_COIN_RATE = 10;
 
 export default function DepartmentDetailPage() {
   const { departmentId } = useParams<{ departmentId: string }>();
   const navigate = useNavigate();
+  const profile = useProfileStore((state) => state.profile);
+  const refreshProfile = useProfileStore((state) => state.refresh);
   const [department, setDepartment] = useState<DepartmentDetail | null>(null);
   const [progress, setProgress] = useState<PlayerProgress | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [stakeTarget, setStakeTarget] = useState<Level | null>(null);
+  const [stakeError, setStakeError] = useState<string | null>(null);
+  const [missingCoins, setMissingCoins] = useState<number | null>(null);
+  const [isStaking, setIsStaking] = useState(false);
 
   async function load() {
     if (!departmentId) return;
@@ -37,6 +49,11 @@ export default function DepartmentDetailPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [departmentId]);
 
+  useEffect(() => {
+    if (!profile) void refreshProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   if (isLoading) return <Loader label="Chargement du departement..." />;
   if (error || !department) return <ErrorMessage message={error ?? "Departement introuvable."} onRetry={load} />;
 
@@ -45,6 +62,55 @@ export default function DepartmentDetailPage() {
 
   function isUnlocked(level: Level) {
     return level.order <= currentOrder + 1;
+  }
+
+  function openStakeModal(level: Level) {
+    setStakeError(null);
+    setMissingCoins(null);
+    setStakeTarget(level);
+  }
+
+  function closeStakeModal() {
+    if (isStaking) return;
+    setStakeTarget(null);
+    setStakeError(null);
+    setMissingCoins(null);
+  }
+
+  async function confirmStake() {
+    if (!stakeTarget) return;
+    setIsStaking(true);
+    setStakeError(null);
+    try {
+      await stakeLevel(stakeTarget.id);
+      await refreshProfile();
+      navigate(`/quiz/level/${stakeTarget.id}`);
+    } catch (err) {
+      if (isAxiosError(err) && err.response?.status === 402) {
+        const coins = (err.response.data as { coins?: number }).coins ?? profile?.coins ?? 0;
+        setMissingCoins(Math.max(stakeTarget.stake_cost - coins, 0));
+        setStakeError("Pas assez de pieces pour miser sur ce chapitre.");
+      } else {
+        setStakeError(getErrorMessage(err, "Impossible de miser sur ce chapitre."));
+      }
+    } finally {
+      setIsStaking(false);
+    }
+  }
+
+  async function convertAndRetry() {
+    if (!missingCoins) return;
+    setIsStaking(true);
+    setStakeError(null);
+    try {
+      const diamondsNeeded = Math.ceil(missingCoins / DIAMOND_TO_COIN_RATE);
+      await convertDiamondsToCoins(diamondsNeeded);
+      setMissingCoins(null);
+      await confirmStake();
+    } catch (err) {
+      setStakeError(getErrorMessage(err, "Pas assez de diamants pour convertir."));
+      setIsStaking(false);
+    }
   }
 
   return (
@@ -77,7 +143,7 @@ export default function DepartmentDetailPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.05 }}
               disabled={!unlocked}
-              onClick={() => navigate(`/quiz/level/${level.id}`)}
+              onClick={() => openStakeModal(level)}
               className={`card-game flex w-full items-center gap-3 text-left transition-all duration-150 ${
                 unlocked ? "hover:-translate-y-0.5 hover:shadow-card-hover active:translate-y-0" : "opacity-50"
               }`}
@@ -95,7 +161,8 @@ export default function DepartmentDetailPage() {
                   Chapitre {level.order} : {level.name}
                 </p>
                 <p className="text-xs text-slate-400">
-                  {level.question_count} questions · +{level.xp_reward} XP · +{level.coin_reward} pieces
+                  {level.question_count} questions · +{level.xp_reward} XP · +{level.coin_reward} pieces · Mise :{" "}
+                  {level.stake_cost} 🪙
                 </p>
               </div>
               <span className="text-2xl">{unlocked ? "▶️" : "🔒"}</span>
@@ -103,6 +170,78 @@ export default function DepartmentDetailPage() {
           );
         })}
       </div>
+
+      {stakeTarget && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="card-game w-full max-w-sm"
+          >
+            <p className="font-display text-lg text-haiti-blue">
+              Chapitre {stakeTarget.order} : {stakeTarget.name}
+            </p>
+            <p className="mt-1 text-sm text-slate-500">
+              Mise ta pieces pour tenter ce chapitre. Si tu reussis, tu recuperes ta mise + la recompense. Si tu
+              echoues, la mise est perdue.
+            </p>
+
+            <div className="card-game mt-3 flex items-center justify-between bg-haiti-blueLight/40">
+              <span className="font-display text-slate-600">Mise requise</span>
+              <span className="font-display text-haiti-blue">{stakeTarget.stake_cost} 🪙</span>
+            </div>
+            <div className="mt-1 flex items-center justify-between text-sm text-slate-400">
+              <span>Tes pieces</span>
+              <span>{profile?.coins ?? "..."} 🪙</span>
+            </div>
+
+            {stakeError && (
+              <div className="mt-3 rounded-2xl bg-haiti-red/10 p-3 text-sm text-haiti-red">
+                <p>{stakeError}</p>
+                {missingCoins !== null && (
+                  <p className="mt-1 text-xs">
+                    Il te manque {missingCoins} pieces (≈ {Math.ceil(missingCoins / DIAMOND_TO_COIN_RATE)} 💎).
+                  </p>
+                )}
+              </div>
+            )}
+
+            <div className="mt-4 space-y-2">
+              {missingCoins === null ? (
+                <button
+                  type="button"
+                  onClick={confirmStake}
+                  disabled={isStaking}
+                  className="btn-game-primary w-full disabled:opacity-60"
+                >
+                  {isStaking ? "..." : `Miser ${stakeTarget.stake_cost} 🪙 et jouer`}
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={convertAndRetry}
+                    disabled={isStaking}
+                    className="btn-game-primary w-full disabled:opacity-60"
+                  >
+                    {isStaking ? "..." : `Convertir ${Math.ceil(missingCoins / DIAMOND_TO_COIN_RATE)} 💎 et jouer`}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => navigate("/profil")}
+                    className="btn-game-outline w-full"
+                  >
+                    Acheter des diamants
+                  </button>
+                </>
+              )}
+              <button type="button" onClick={closeStakeModal} disabled={isStaking} className="btn-game-secondary w-full">
+                Annuler
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </section>
   );
 }

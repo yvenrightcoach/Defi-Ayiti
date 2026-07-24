@@ -59,3 +59,40 @@ class TestMeEndpoint:
         profile.refresh_from_db()
         assert profile.coins == 100
         assert profile.xp == 0
+
+
+@pytest.mark.django_db
+class TestConvertDiamondsToCoins:
+    def test_converts_diamonds_into_coins(self, auth_client):
+        client, profile = auth_client
+        profile.diamonds = 50
+        profile.save(update_fields=["diamonds"])
+
+        response = client.post("/api/v1/auth/me/convert-diamonds/", {"diamonds": 20})
+
+        assert response.status_code == 200
+        assert response.data["diamonds"] == 30
+        assert response.data["coins"] == 300  # 100 de depart + 20*10
+
+        profile.refresh_from_db()
+        assert profile.diamonds == 30
+        assert profile.coins == 300
+
+    def test_fails_when_not_enough_diamonds(self, auth_client):
+        client, profile = auth_client
+
+        response = client.post("/api/v1/auth/me/convert-diamonds/", {"diamonds": 5})
+
+        assert response.status_code == 400
+        profile.refresh_from_db()
+        assert profile.coins == 100
+        assert profile.diamonds == 0
+
+    def test_rejects_non_positive_amount(self, auth_client):
+        client, _ = auth_client
+        response = client.post("/api/v1/auth/me/convert-diamonds/", {"diamonds": 0})
+        assert response.status_code == 400
+
+    def test_requires_authentication(self, api_client):
+        response = api_client.post("/api/v1/auth/me/convert-diamonds/", {"diamonds": 5})
+        assert response.status_code == 401

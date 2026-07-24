@@ -1329,7 +1329,14 @@ class Command(BaseCommand):
             level.required_score = LEVEL_REQUIRED_SCORE
             level.is_boss_level = True
             level.unlocks_hero = heroes.get(level_data["hero"])
-            level.save(update_fields=["question_count", "required_score", "is_boss_level", "unlocks_hero"])
+            # Mise en pieces croissante avec l'avancement sur la carte : reste
+            # abordable au debut (100 pieces de depart) mais rend les derniers
+            # departements plus couteux a tenter, sans jamais depasser ce
+            # qu'un joueur regulier peut regagner en une ou deux victoires.
+            level.stake_cost = 20 + (department.order - 1) * 5
+            level.save(
+                update_fields=["question_count", "required_score", "is_boss_level", "unlocks_hero", "stake_cost"]
+            )
 
             question_count += self._seed_questions(
                 level_data["questions"], categories, level=level, department=department

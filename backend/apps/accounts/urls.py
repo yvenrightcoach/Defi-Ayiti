@@ -18,5 +18,6 @@ urlpatterns = [
     path("guest/", views.GuestLoginView.as_view(), name="guest-login"),
     # Profil de jeu de l'utilisateur connecte
     path("me/", views.MeProfileView.as_view(), name="me"),
+    path("me/convert-diamonds/", views.ConvertDiamondsToCoinsView.as_view(), name="convert-diamonds"),
     path("", include(router.urls)),
 ]

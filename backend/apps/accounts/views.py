@@ -11,7 +11,18 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User, UserProfile
-from .serializers import GuestLoginResponseSerializer, UserProfileSerializer, UserProfileUpdateSerializer
+from .serializers import (
+    ConvertDiamondsResultSerializer,
+    ConvertDiamondsSerializer,
+    GuestLoginResponseSerializer,
+    UserProfileSerializer,
+    UserProfileUpdateSerializer,
+)
+
+# Taux de conversion monnaie premium -> monnaie de jeu. Volontairement modeste
+# pour que les diamants restent surtout utiles a la boutique (cosmetiques),
+# tout en offrant un filet de secours pour miser sur les chapitres Aventure.
+DIAMOND_TO_COIN_RATE = 10
 
 
 class GuestLoginView(APIView):
@@ -65,6 +76,35 @@ class MeProfileView(RetrieveUpdateAPIView):
     def get_object(self):
         profile, _ = UserProfile.objects.get_or_create(user=self.request.user)
         return profile
+
+
+class ConvertDiamondsToCoinsView(APIView):
+    """
+    Convertit des diamants (monnaie premium, achetee ou gagnee) en pieces
+    (monnaie de jeu), utilisee notamment pour miser sur les chapitres du
+    mode Aventure quand le joueur n'a plus de pieces.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(request=ConvertDiamondsSerializer, responses=ConvertDiamondsResultSerializer)
+    def post(self, request, *args, **kwargs):
+        payload = ConvertDiamondsSerializer(data=request.data)
+        payload.is_valid(raise_exception=True)
+        diamonds = payload.validated_data["diamonds"]
+
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        if profile.diamonds < diamonds:
+            return Response(
+                {"detail": "Pas assez de diamants.", "diamonds": profile.diamonds}, status=400
+            )
+
+        profile.diamonds -= diamonds
+        profile.coins += diamonds * DIAMOND_TO_COIN_RATE
+        profile.save(update_fields=["coins", "diamonds"])
+
+        result = ConvertDiamondsResultSerializer({"coins": profile.coins, "diamonds": profile.diamonds})
+        return Response(result.data)
 
 
 class UserProfileViewSet(viewsets.ReadOnlyModelViewSet):

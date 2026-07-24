@@ -1,5 +1,5 @@
 import { apiClient } from "@/services/apiClient";
-import type { UserProfile } from "@/types/api";
+import type { ConvertDiamondsResult, UserProfile } from "@/types/api";
 
 export interface GuestLoginResponse {
   access: string;
@@ -46,4 +46,9 @@ export async function updateMe(payload: Partial<Pick<UserProfile, "avatar_url" |
 export async function searchProfiles(search: string): Promise<UserProfile[]> {
   const { data } = await apiClient.get(`/auth/profiles/`, { params: { search } });
   return data.results;
+}
+
+export async function convertDiamondsToCoins(diamonds: number): Promise<ConvertDiamondsResult> {
+  const { data } = await apiClient.post<ConvertDiamondsResult>("/auth/me/convert-diamonds/", { diamonds });
+  return data;
 }

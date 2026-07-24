@@ -9,7 +9,7 @@ class LevelSerializer(serializers.ModelSerializer):
         model = Level
         fields = (
             "id", "department", "order", "name", "description", "question_count",
-            "required_score", "xp_reward", "coin_reward", "is_boss_level", "unlocks_hero",
+            "required_score", "xp_reward", "coin_reward", "stake_cost", "is_boss_level", "unlocks_hero",
         )
 
 

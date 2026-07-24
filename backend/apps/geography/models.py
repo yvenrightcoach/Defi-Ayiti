@@ -42,6 +42,9 @@ class Level(BaseModel):
     )
     xp_reward = models.PositiveIntegerField(default=50)
     coin_reward = models.PositiveIntegerField(default=20)
+    stake_cost = models.PositiveIntegerField(
+        default=25, help_text="Pieces a miser pour tenter ce chapitre (perdues en cas d'echec)"
+    )
     is_boss_level = models.BooleanField(default=False)
     unlocks_hero = models.ForeignKey(
         "heroes.Hero", null=True, blank=True, related_name="unlocked_by_levels", on_delete=models.SET_NULL

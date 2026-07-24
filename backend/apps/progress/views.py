@@ -17,6 +17,8 @@ from .serializers import (
     CompleteLevelResultSerializer,
     CompleteLevelSerializer,
     PlayerProgressSerializer,
+    StakeLevelResultSerializer,
+    StakeLevelSerializer,
 )
 
 # Chance (par chapitre reussi) de recevoir en bonus un heros non lie a un
@@ -42,6 +44,46 @@ class PlayerProgressViewSet(viewsets.ReadOnlyModelViewSet):
             "department", "current_level"
         )
 
+    @extend_schema(request=StakeLevelSerializer, responses=StakeLevelResultSerializer)
+    @action(detail=False, methods=["post"], url_path="stake-level")
+    def stake_level(self, request):
+        """
+        Mise obligatoire en pieces avant de tenter un chapitre : le joueur ne
+        peut pas jouer sans miser, et perd sa mise en cas d'echec. Empeche
+        aussi de miser sur un departement encore verrouille.
+        """
+        payload = StakeLevelSerializer(data=request.data)
+        payload.is_valid(raise_exception=True)
+
+        try:
+            level = Level.objects.select_related("department").get(id=payload.validated_data["level_id"])
+        except Level.DoesNotExist as exc:
+            raise NotFound("Chapitre introuvable.") from exc
+
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+
+        if not self._department_unlocked(profile, level.department):
+            return Response({"detail": "Ce departement est encore verrouille."}, status=403)
+
+        if profile.coins < level.stake_cost:
+            return Response(
+                {
+                    "detail": "Pas assez de pieces pour miser sur ce chapitre.",
+                    "stake_cost": level.stake_cost,
+                    "coins": profile.coins,
+                },
+                status=402,
+            )
+
+        progress, _ = PlayerProgress.objects.get_or_create(profile=profile, department=level.department)
+        profile.coins -= level.stake_cost
+        profile.save(update_fields=["coins"])
+        progress.pending_stake = level.stake_cost
+        progress.save(update_fields=["pending_stake"])
+
+        result = StakeLevelResultSerializer({"stake_cost": level.stake_cost, "coins_remaining": profile.coins})
+        return Response(result.data)
+
     @extend_schema(request=CompleteLevelSerializer, responses=CompleteLevelResultSerializer)
     @action(detail=False, methods=["post"], url_path="complete-level")
     def complete_level(self, request):
@@ -65,13 +107,27 @@ class PlayerProgressViewSet(viewsets.ReadOnlyModelViewSet):
         xp_awarded = 0
         coin_awarded = 0
         hero_unlocked = None
+        stake_refunded = 0
+        stake_lost = False
+
+        staked = progress.pending_stake
+        coins_dirty = False
+        progress_dirty = False
+
+        if staked:
+            progress.pending_stake = 0
+            progress_dirty = True
 
         if level_passed:
             xp_awarded = level.xp_reward
             coin_awarded = level.coin_reward
             profile.add_xp(xp_awarded)
             profile.coins += coin_awarded
-            profile.save(update_fields=["coins"])
+            coins_dirty = True
+
+            if staked:
+                profile.coins += staked
+                stake_refunded = staked
 
             progress.stars += 1
             progress.total_score += score_percent
@@ -79,7 +135,7 @@ class PlayerProgressViewSet(viewsets.ReadOnlyModelViewSet):
             if level.is_boss_level:
                 progress.is_completed = True
                 progress.completed_at = timezone.now()
-            progress.save()
+            progress_dirty = True
 
             if level.unlocks_hero:
                 _, created = HeroCard.objects.get_or_create(
@@ -90,6 +146,13 @@ class PlayerProgressViewSet(viewsets.ReadOnlyModelViewSet):
 
             if hero_unlocked is None:
                 hero_unlocked = self._roll_bonus_hero(profile)
+        elif staked:
+            stake_lost = True
+
+        if coins_dirty:
+            profile.save(update_fields=["coins"])
+        if progress_dirty:
+            progress.save()
 
         result = CompleteLevelResultSerializer(
             {
@@ -98,10 +161,22 @@ class PlayerProgressViewSet(viewsets.ReadOnlyModelViewSet):
                 "xp_awarded": xp_awarded,
                 "coin_awarded": coin_awarded,
                 "hero_unlocked": hero_unlocked,
+                "stake_refunded": stake_refunded,
+                "stake_lost": stake_lost,
             },
             context={"profile": profile},
         )
         return Response(result.data)
+
+    @staticmethod
+    def _department_unlocked(profile, department):
+        """Meme regle que DepartmentSerializer.get_is_unlocked : le premier
+        departement est libre, les suivants exigent le precedent termine."""
+        if department.order <= 1:
+            return True
+        return PlayerProgress.objects.filter(
+            profile=profile, department__order=department.order - 1, is_completed=True
+        ).exists()
 
     @staticmethod
     def _roll_bonus_hero(profile):

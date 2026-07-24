@@ -33,3 +33,16 @@ class CompleteLevelResultSerializer(serializers.Serializer):
     xp_awarded = serializers.IntegerField()
     coin_awarded = serializers.IntegerField()
     hero_unlocked = HeroSerializer(allow_null=True)
+    stake_refunded = serializers.IntegerField()
+    stake_lost = serializers.BooleanField()
+
+
+class StakeLevelSerializer(serializers.Serializer):
+    """Payload envoye pour miser des pieces avant de tenter un chapitre."""
+
+    level_id = serializers.UUIDField()
+
+
+class StakeLevelResultSerializer(serializers.Serializer):
+    stake_cost = serializers.IntegerField()
+    coins_remaining = serializers.IntegerField()

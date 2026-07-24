@@ -57,6 +57,7 @@ export interface Level {
   required_score: number;
   xp_reward: number;
   coin_reward: number;
+  stake_cost: number;
   is_boss_level: boolean;
   unlocks_hero: string | null;
 }
@@ -153,6 +154,13 @@ export interface CompleteLevelResult {
   xp_awarded: number;
   coin_awarded: number;
   hero_unlocked: Hero | null;
+  stake_refunded: number;
+  stake_lost: boolean;
+}
+
+export interface StakeLevelResult {
+  stake_cost: number;
+  coins_remaining: number;
 }
 
 export type FriendStatus = "pending" | "accepted" | "declined";
@@ -323,6 +331,11 @@ export interface DiamondPack {
   diamonds_amount: number;
   price_usd_cents: number;
   order: number;
+}
+
+export interface ConvertDiamondsResult {
+  coins: number;
+  diamonds: number;
 }
 
 export interface AppNotification {

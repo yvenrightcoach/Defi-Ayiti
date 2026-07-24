@@ -6,11 +6,15 @@ import ErrorMessage from "@/components/ui/ErrorMessage";
 import Loader from "@/components/ui/Loader";
 import { useCountUp } from "@/hooks/useCountUp";
 import { LEAGUE_COLORS, LEAGUE_LABELS } from "@/lib/leagues";
+import { getErrorMessage } from "@/lib/errors";
+import { convertDiamondsToCoins } from "@/services/endpoints/auth";
 import { createStripeCheckout, listDiamondPacks } from "@/services/endpoints/payments";
 import { useAuthStore } from "@/store/authStore";
 import { useProfileStore } from "@/store/profileStore";
 import { useSoundStore } from "@/store/soundStore";
 import type { DiamondPack } from "@/types/api";
+
+const DIAMOND_TO_COIN_RATE = 10;
 
 function formatUsd(cents: number): string {
   return `${(cents / 100).toFixed(2)} $`;
@@ -28,6 +32,11 @@ export default function ProfilePage() {
   const [processingPackId, setProcessingPackId] = useState<string | null>(null);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
   const [paymentBanner] = useState<string | null>(() => searchParams.get("paiement"));
+
+  const [diamondsToConvert, setDiamondsToConvert] = useState(10);
+  const [isConverting, setIsConverting] = useState(false);
+  const [convertError, setConvertError] = useState<string | null>(null);
+  const [convertSuccess, setConvertSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     void refresh();
@@ -55,6 +64,23 @@ export default function ProfilePage() {
     } catch {
       setPurchaseError("Impossible de lancer le paiement pour le moment.");
       setProcessingPackId(null);
+    }
+  }
+
+  async function handleConvertDiamonds() {
+    if (diamondsToConvert <= 0) return;
+    setConvertError(null);
+    setConvertSuccess(null);
+    setIsConverting(true);
+    try {
+      const result = await convertDiamondsToCoins(diamondsToConvert);
+      setConvertSuccess(`+${diamondsToConvert * DIAMOND_TO_COIN_RATE} pieces !`);
+      await refresh();
+      void result;
+    } catch (err) {
+      setConvertError(getErrorMessage(err, "Impossible de convertir ces diamants."));
+    } finally {
+      setIsConverting(false);
     }
   }
 
@@ -144,6 +170,34 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
+
+      <div className="card-game mt-4">
+        <p className="mb-1 font-display text-haiti-blue">🔄 Convertir en pieces</p>
+        <p className="mb-2 text-xs text-slate-400">
+          Utilise tes diamants pour miser sur les chapitres du mode Aventure (1 💎 = {DIAMOND_TO_COIN_RATE} 🪙).
+        </p>
+        {convertError && <p className="mb-2 text-sm text-haiti-red">{convertError}</p>}
+        {convertSuccess && <p className="mb-2 text-sm text-haiti-green">{convertSuccess}</p>}
+        <div className="flex items-center gap-2">
+          <input
+            type="number"
+            min={1}
+            max={profile.diamonds}
+            value={diamondsToConvert}
+            onChange={(e) => setDiamondsToConvert(Math.max(1, Number(e.target.value)))}
+            className="w-20 rounded-2xl border-2 border-haiti-blue/10 px-3 py-2 text-center font-display text-haiti-blue"
+          />
+          <span className="text-sm text-slate-400">💎 → {diamondsToConvert * DIAMOND_TO_COIN_RATE} 🪙</span>
+        </div>
+        <button
+          type="button"
+          onClick={handleConvertDiamonds}
+          disabled={isConverting || profile.diamonds < diamondsToConvert}
+          className="btn-game-outline mt-2 w-full disabled:opacity-60"
+        >
+          {isConverting ? "..." : "Convertir"}
+        </button>
+      </div>
 
       <div className="card-game mt-4 text-sm text-slate-600">
         <p>

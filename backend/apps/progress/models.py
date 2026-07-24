@@ -17,6 +17,9 @@ class PlayerProgress(BaseModel):
     )
     stars = models.PositiveSmallIntegerField(default=0)
     total_score = models.PositiveIntegerField(default=0)
+    pending_stake = models.PositiveIntegerField(
+        default=0, help_text="Pieces misees sur le chapitre courant, en attente du resultat"
+    )
     is_completed = models.BooleanField(default=False, help_text="Tous les chapitres + boss final termines")
     completed_at = models.DateTimeField(null=True, blank=True)
 

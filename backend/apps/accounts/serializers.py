@@ -48,3 +48,14 @@ class GuestLoginResponseSerializer(serializers.Serializer):
     access = serializers.CharField()
     refresh = serializers.CharField()
     user = UserBasicSerializer()
+
+
+class ConvertDiamondsSerializer(serializers.Serializer):
+    """Payload pour convertir des diamants (monnaie premium) en pieces."""
+
+    diamonds = serializers.IntegerField(min_value=1)
+
+
+class ConvertDiamondsResultSerializer(serializers.Serializer):
+    coins = serializers.IntegerField()
+    diamonds = serializers.IntegerField()

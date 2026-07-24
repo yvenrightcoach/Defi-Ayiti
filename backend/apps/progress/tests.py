@@ -148,6 +148,97 @@ class TestBonusHeroDrop:
 
 
 @pytest.mark.django_db
+class TestStakeLevel:
+    def test_staking_deducts_coins_and_sets_pending_stake(self, auth_client, department_with_level):
+        client, profile = auth_client
+        _, level, _ = department_with_level
+        level.stake_cost = 30
+        level.save(update_fields=["stake_cost"])
+
+        response = client.post("/api/v1/progress/entries/stake-level/", {"level_id": str(level.id)})
+
+        assert response.status_code == 200
+        assert response.data["stake_cost"] == 30
+        assert response.data["coins_remaining"] == 70
+
+        profile.refresh_from_db()
+        assert profile.coins == 70
+        progress = PlayerProgress.objects.get(profile=profile, department=level.department)
+        assert progress.pending_stake == 30
+
+    def test_cannot_stake_without_enough_coins(self, auth_client, department_with_level):
+        client, profile = auth_client
+        _, level, _ = department_with_level
+        level.stake_cost = 500
+        level.save(update_fields=["stake_cost"])
+
+        response = client.post("/api/v1/progress/entries/stake-level/", {"level_id": str(level.id)})
+
+        assert response.status_code == 402
+        profile.refresh_from_db()
+        assert profile.coins == 100
+
+    def test_cannot_stake_on_a_locked_department(self, auth_client):
+        client, profile = auth_client
+        dept1 = Department.objects.create(name="Nippes", slug="nippes", code="NIP", order=1)
+        dept2 = Department.objects.create(name="Nord-Est", slug="nord-est", code="ND", order=2)
+        level = Level.objects.create(department=dept2, order=1, name="Chapitre", stake_cost=20)
+
+        response = client.post("/api/v1/progress/entries/stake-level/", {"level_id": str(level.id)})
+
+        assert response.status_code == 403
+        profile.refresh_from_db()
+        assert profile.coins == 100
+
+    def test_winning_a_staked_level_refunds_the_stake(self, auth_client, department_with_level):
+        client, profile = auth_client
+        _, level, _ = department_with_level
+        level.stake_cost = 30
+        level.required_score = 70
+        level.save(update_fields=["stake_cost", "required_score"])
+        client.post("/api/v1/progress/entries/stake-level/", {"level_id": str(level.id)})
+
+        response = client.post(
+            "/api/v1/progress/entries/complete-level/", {"level_id": str(level.id), "score_percent": 80}
+        )
+
+        assert response.data["stake_refunded"] == 30
+        assert response.data["stake_lost"] is False
+        profile.refresh_from_db()
+        assert profile.coins == 70 + 30 + level.coin_reward  # mise remboursee + recompense normale
+
+        progress = PlayerProgress.objects.get(profile=profile, department=level.department)
+        assert progress.pending_stake == 0
+
+    def test_losing_a_staked_level_forfeits_the_stake(self, auth_client, department_with_level):
+        client, profile = auth_client
+        _, level, _ = department_with_level
+        level.stake_cost = 30
+        level.required_score = 70
+        level.save(update_fields=["stake_cost", "required_score"])
+        client.post("/api/v1/progress/entries/stake-level/", {"level_id": str(level.id)})
+
+        response = client.post(
+            "/api/v1/progress/entries/complete-level/", {"level_id": str(level.id), "score_percent": 40}
+        )
+
+        assert response.data["stake_refunded"] == 0
+        assert response.data["stake_lost"] is True
+        profile.refresh_from_db()
+        assert profile.coins == 70  # mise perdue, aucune recompense
+
+        progress = PlayerProgress.objects.get(profile=profile, department=level.department)
+        assert progress.pending_stake == 0
+
+    def test_unknown_level_returns_404(self, auth_client):
+        client, _ = auth_client
+        response = client.post(
+            "/api/v1/progress/entries/stake-level/", {"level_id": "00000000-0000-0000-0000-000000000000"}
+        )
+        assert response.status_code == 404
+
+
+@pytest.mark.django_db
 class TestDepartmentIsUnlocked:
     def test_first_department_is_always_unlocked(self, auth_client):
         client, _ = auth_client
