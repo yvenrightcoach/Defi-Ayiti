@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 from django.urls import reverse
 
@@ -59,3 +61,44 @@ class TestMeEndpoint:
         profile.refresh_from_db()
         assert profile.coins == 100
         assert profile.xp == 0
+
+
+@pytest.mark.django_db
+class TestClaimAdReward:
+    def test_awards_coins(self, auth_client):
+        client, profile = auth_client
+        response = client.post("/api/v1/auth/me/claim-ad-reward/")
+        assert response.status_code == 200
+        assert response.data["coins_awarded"] == 30
+        profile.refresh_from_db()
+        assert profile.coins == 130
+
+    def test_daily_limit_blocks_further_claims(self, auth_client):
+        client, profile = auth_client
+        for _ in range(5):
+            response = client.post("/api/v1/auth/me/claim-ad-reward/")
+            assert response.status_code == 200
+
+        response = client.post("/api/v1/auth/me/claim-ad-reward/")
+        assert response.status_code == 429
+        assert response.data["coins_awarded"] == 0
+
+        profile.refresh_from_db()
+        assert profile.coins == 100 + 5 * 30
+
+    def test_limit_resets_on_a_new_day(self, auth_client):
+        client, profile = auth_client
+        for _ in range(5):
+            client.post("/api/v1/auth/me/claim-ad-reward/")
+
+        profile.refresh_from_db()
+        profile.ad_rewards_date -= datetime.timedelta(days=1)
+        profile.save(update_fields=["ad_rewards_date"])
+
+        response = client.post("/api/v1/auth/me/claim-ad-reward/")
+        assert response.status_code == 200
+        assert response.data["coins_awarded"] == 30
+
+    def test_requires_authentication(self, api_client):
+        response = api_client.post("/api/v1/auth/me/claim-ad-reward/")
+        assert response.status_code == 401

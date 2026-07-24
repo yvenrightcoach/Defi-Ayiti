@@ -3,6 +3,7 @@ import uuid
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 
 from apps.core.models import BaseModel
 
@@ -64,6 +65,9 @@ class UserProfile(BaseModel):
     win_streak = models.PositiveIntegerField(default=0)
     best_win_streak = models.PositiveIntegerField(default=0)
 
+    ad_rewards_claimed_today = models.PositiveSmallIntegerField(default=0)
+    ad_rewards_date = models.DateField(null=True, blank=True)
+
     class Meta:
         verbose_name = "Profil joueur"
         verbose_name_plural = "Profils joueurs"
@@ -77,3 +81,23 @@ class UserProfile(BaseModel):
         xp_per_level = 100
         self.level = max(1, self.xp // xp_per_level + 1)
         self.save(update_fields=["xp", "level"])
+
+    def claim_ad_reward(self, *, amount: int, daily_limit: int) -> int | None:
+        """
+        Accorde un bonus de pieces pour une pub recompensee regardee cote
+        client, plafonne par jour. Tant qu'aucune verification serveur-a-
+        serveur du reseau publicitaire n'est branchee, ce plafond est la
+        seule protection contre l'abus (appel direct de l'API sans avoir
+        reellement vu la pub). Retourne le montant accorde, ou None si le
+        plafond du jour est deja atteint.
+        """
+        today = timezone.localdate()
+        if self.ad_rewards_date != today:
+            self.ad_rewards_date = today
+            self.ad_rewards_claimed_today = 0
+        if self.ad_rewards_claimed_today >= daily_limit:
+            return None
+        self.ad_rewards_claimed_today += 1
+        self.coins += amount
+        self.save(update_fields=["ad_rewards_date", "ad_rewards_claimed_today", "coins"])
+        return amount

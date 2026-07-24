@@ -9,8 +9,10 @@ import Loader from "@/components/ui/Loader";
 import Mascot from "@/components/ui/Mascot";
 import QuestionCard from "@/features/quiz/QuestionCard";
 import { useCountUp } from "@/hooks/useCountUp";
+import { isAdsEnabled, showRewardedAd } from "@/lib/ads";
 import { getErrorMessage } from "@/lib/errors";
-import { playCorrect, playSuccess, playUnlock, playWrong } from "@/lib/sound";
+import { playCoin, playCorrect, playSuccess, playUnlock, playWrong } from "@/lib/sound";
+import { claimAdReward } from "@/services/endpoints/ads";
 import { completeLevel } from "@/services/endpoints/progress";
 import { listQuestionSession, submitAnswer } from "@/services/endpoints/quiz";
 import { useProfileStore } from "@/store/profileStore";
@@ -192,6 +194,26 @@ function FinishScreen({
   const xpDisplay = useCountUp(levelResult?.xp_awarded ?? totalXp);
   const coinDisplay = useCountUp(levelResult?.coin_awarded ?? 0);
 
+  const [adState, setAdState] = useState<"idle" | "loading" | "claimed">("idle");
+  const [bonusCoins, setBonusCoins] = useState(0);
+
+  async function handleWatchAd() {
+    setAdState("loading");
+    const viewed = await showRewardedAd("bonus-coins");
+    if (!viewed) {
+      setAdState("idle");
+      return;
+    }
+    try {
+      const { coins_awarded } = await claimAdReward();
+      setBonusCoins(coins_awarded);
+      playCoin();
+      setAdState("claimed");
+    } catch {
+      setAdState("idle");
+    }
+  }
+
   useEffect(() => {
     if (heroUnlocked) {
       playUnlock();
@@ -235,6 +257,20 @@ function FinishScreen({
             <p className="text-lg font-display text-haiti-blue">{heroUnlocked.name}</p>
             {heroUnlocked.quote && <p className="mt-1 text-sm italic text-slate-500">"{heroUnlocked.quote}"</p>}
           </motion.div>
+        )}
+
+        {isAdsEnabled() && adState !== "claimed" && (
+          <button
+            type="button"
+            onClick={handleWatchAd}
+            disabled={adState === "loading"}
+            className="btn-game-outline mt-4 w-full disabled:opacity-60"
+          >
+            {adState === "loading" ? "Chargement de la pub..." : "🎬 Regarder une pub (+30 pieces)"}
+          </button>
+        )}
+        {adState === "claimed" && (
+          <p className="mt-4 font-display text-haiti-yellow">+{bonusCoins} pieces bonus !</p>
         )}
 
         <button type="button" onClick={onContinue} className="btn-game-primary mt-6 w-full">
