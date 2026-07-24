@@ -26,6 +26,16 @@ class Command(BaseCommand):
             return
 
         User = get_user_model()
+
+        # Email est unique : si ADMIN_USERNAME a change d'un deploiement a
+        # l'autre (ex. "admin" -> "Admin"), l'ancien compte bootstrap garde
+        # cet email et ferait echouer la creation du nouveau avec un
+        # IntegrityError, plantant tout le build. On liberere donc l'email
+        # de tout compte qui ne correspond plus au username actuel.
+        for stale in User.objects.filter(email=email).exclude(username=username):
+            stale.email = f"stale-admin-{stale.pk}@invalid.local"
+            stale.save(update_fields=["email"])
+
         admin, created = User.objects.get_or_create(
             username=username, defaults={"email": email, "is_staff": True, "is_superuser": True}
         )

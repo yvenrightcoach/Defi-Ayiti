@@ -136,6 +136,24 @@ class TestEnsureAdminCommand:
 
         assert User.objects.filter(username="root").count() == 1
 
+    def test_handles_username_changing_between_runs_without_email_conflict(self, monkeypatch):
+        monkeypatch.setenv("ADMIN_USERNAME", "admin")
+        monkeypatch.setenv("ADMIN_EMAIL", "admin@gesti.com")
+        monkeypatch.setenv("ADMIN_PASSWORD", "first-password")
+        call_command("ensure_admin")
+
+        monkeypatch.setenv("ADMIN_USERNAME", "Admin")
+        monkeypatch.setenv("ADMIN_PASSWORD", "second-password")
+        call_command("ensure_admin")
+
+        new_admin = User.objects.get(username="Admin")
+        assert new_admin.email == "admin@gesti.com"
+        assert new_admin.check_password("second-password")
+        assert new_admin.is_superuser is True
+
+        old_admin = User.objects.get(username="admin")
+        assert old_admin.email != "admin@gesti.com"
+
     def test_resyncs_password_and_email_on_existing_account(self, monkeypatch):
         monkeypatch.setenv("ADMIN_USERNAME", "root")
         monkeypatch.setenv("ADMIN_EMAIL", "root@defi-ayiti.local")
