@@ -847,6 +847,301 @@ EXTRA_QUESTIONS = [
         "answers": ["Le vaksin (vaccine)", "Le tambour djembe", "La guitare", "Le piano"],
         "explanation": "Le vaksin, ou vaccine, est une trompette rudimentaire au son caracteristique du rara.",
     },
+
+    # --- Histoire, de 1492 a nos jours ------------------------------------
+    {
+        "cat": "histoire", "diff": "easy",
+        "text": "En quelle annee Christophe Colomb accoste-t-il sur l'ile qui deviendra Haiti ?",
+        "answers": ["1492", "1502", "1697", "1804"],
+        "explanation": "Colomb atteint l'ile d'Hispaniola lors de son premier voyage, en 1492.",
+    },
+    {
+        "cat": "histoire", "diff": "medium",
+        "text": "Quel mot taino, signifiant 'terre des hautes montagnes', est choisi par Dessalines pour renommer le pays en 1804 ?",
+        "answers": ["Ayiti", "Boriken", "Xaymaca", "Cubanacan"],
+        "explanation": "Boriken (Porto Rico) et Xaymaca (Jamaique) sont les noms taino d'autres iles voisines.",
+    },
+    {
+        "cat": "histoire", "diff": "hard",
+        "text": "Quel traite de 1697 cede la partie occidentale de l'ile aux Francais, donnant naissance a la colonie de Saint-Domingue ?",
+        "answers": ["Le traite de Ryswick", "Le traite de Tordesillas", "Le traite de Vienne", "Le traite de Versailles"],
+        "explanation": "Le traite de Ryswick officialise la possession francaise de l'ouest de l'ile.",
+    },
+    {
+        "cat": "histoire", "diff": "hard",
+        "text": "En quelle annee a lieu la ceremonie du Bois-Caiman, point de depart de la revolution haitienne ?",
+        "answers": ["1791", "1789", "1801", "1804"],
+        "explanation": "Le 14 aout 1791, une ceremonie vaudou lance l'insurrection generale des esclaves du Nord.",
+    },
+    {
+        "cat": "histoire", "diff": "medium",
+        "text": "Qui est Dutty Boukman ?",
+        "answers": [
+            "Un pretre vaudou qui a mene la ceremonie du Bois-Caiman en 1791",
+            "Le premier president d'Haiti",
+            "L'auteur de la Constitution de 1805",
+            "Un general francais envoye par Napoleon",
+        ],
+        "explanation": "Boukman est une figure centrale du declenchement de la revolution haitienne.",
+    },
+    {
+        "cat": "histoire", "diff": "hard",
+        "text": "En quelle annee Napoleon Bonaparte envoie-t-il une expedition militaire pour retablir l'esclavage a Saint-Domingue ?",
+        "answers": ["1802", "1799", "1804", "1791"],
+        "explanation": "L'expedition du general Leclerc debarque en 1802.",
+    },
+    {
+        "cat": "histoire", "diff": "medium",
+        "text": "Quelle bataille de novembre 1803 marque la victoire decisive des forces haitiennes sur l'armee francaise ?",
+        "answers": ["La bataille de Vertieres", "La bataille de Crete-a-Pierrot", "La bataille de Savannah", "Le siege de Jacmel"],
+        "explanation": "La bataille de Vertieres, le 18 novembre 1803, precede l'independance de quelques semaines.",
+    },
+    {
+        "cat": "histoire", "diff": "medium",
+        "text": "Qui commande les forces haitiennes lors de la bataille de Vertieres, en novembre 1803 ?",
+        "answers": ["Jean-Jacques Dessalines", "Toussaint Louverture", "Alexandre Petion", "Charlemagne Peralte"],
+        "explanation": "Toussaint Louverture, deporte en France depuis avril 1802, n'est plus aux commandes.",
+    },
+    {
+        "cat": "histoire", "diff": "medium",
+        "text": "Ou et comment meurt Toussaint Louverture, en avril 1803 ?",
+        "answers": ["Emprisonne au fort de Joux, en France", "Tue au combat a Vertieres", "Assassine au palais national", "Exile a la Martinique"],
+        "explanation": "Deporte en France, il meurt de froid et de privations au fort de Joux.",
+    },
+    {
+        "cat": "histoire", "diff": "hard",
+        "text": "De 1806 a 1820, Haiti est divise entre deux Etats rivaux. Qui les dirige ?",
+        "answers": [
+            "Henri Christophe au Nord, Alexandre Petion au Sud",
+            "Toussaint Louverture au Nord, Dessalines au Sud",
+            "Jean-Pierre Boyer au Nord, Petion au Sud",
+            "Christophe au Sud, Petion au Nord",
+        ],
+        "explanation": "Le royaume du Nord de Christophe et la republique du Sud de Petion coexistent jusqu'a la reunification par Boyer.",
+    },
+    {
+        "cat": "histoire", "diff": "hard",
+        "text": "En 1825, Haiti accepte de verser une indemnite a la France en echange de la reconnaissance de son independance. Quelle en est la principale consequence ?",
+        "answers": [
+            "Un fardeau financier majeur qui pese sur le pays pendant plus d'un siecle",
+            "Un investissement rapidement rembourse sans consequence",
+            "Une somme symbolique de peu d'impact",
+            "Un pret annule des 1830",
+        ],
+        "explanation": "L'indemnite de 150 millions de francs-or endette lourdement Haiti jusqu'au 20e siecle.",
+    },
+    {
+        "cat": "histoire", "diff": "medium",
+        "text": "Quel president haitien negocie l'indemnite de 1825 avec la France ?",
+        "answers": ["Jean-Pierre Boyer", "Alexandre Petion", "Henri Christophe", "Faustin Soulouque"],
+        "explanation": "Boyer, qui a reunifie le pays en 1820, accepte les conditions francaises en 1825.",
+    },
+    {
+        "cat": "histoire", "diff": "medium",
+        "text": "En quelle annee les Etats-Unis commencent-ils une occupation militaire d'Haiti, qui dure jusqu'en 1934 ?",
+        "answers": ["1915", "1804", "1937", "1957"],
+        "explanation": "L'occupation americaine dure de 1915 a 1934.",
+    },
+    {
+        "cat": "histoire", "diff": "medium",
+        "text": "Quel resistant haitien mene la lutte armee des cacos contre l'occupation americaine, jusqu'a son assassinat en 1919 ?",
+        "answers": ["Charlemagne Peralte", "Toussaint Louverture", "Dutty Boukman", "Sylvain Salnave"],
+        "explanation": "Charlemagne Peralte devient un symbole de la resistance a l'occupation.",
+    },
+    {
+        "cat": "histoire", "diff": "medium",
+        "text": "Quel est le surnom de Francois Duvalier, president devenu dictateur a partir de 1957 ?",
+        "answers": ["Papa Doc", "Baby Doc", "Le Petit Caporal", "Le Liberateur"],
+        "explanation": "Medecin de formation, Francois Duvalier est surnomme 'Papa Doc'.",
+    },
+    {
+        "cat": "histoire", "diff": "medium",
+        "text": "Qui succede a Francois Duvalier a sa mort en 1971, poursuivant la dictature familiale ?",
+        "answers": ["Jean-Claude Duvalier, dit Baby Doc", "Charlemagne Peralte", "Leslie Manigat", "Henri Namphy"],
+        "explanation": "Jean-Claude Duvalier devient president a vie a 19 ans.",
+    },
+    {
+        "cat": "histoire", "diff": "easy",
+        "text": "En quelle annee Jean-Claude Duvalier fuit-il le pays, mettant fin a 29 ans de dictature familiale ?",
+        "answers": ["1986", "1990", "1971", "1957"],
+        "explanation": "Il s'exile en France le 7 fevrier 1986.",
+    },
+    {
+        "cat": "histoire", "diff": "medium",
+        "text": "Qui remporte les premieres elections presidentielles democratiques d'Haiti, en decembre 1990 ?",
+        "answers": ["Jean-Bertrand Aristide", "Francois Duvalier", "Leslie Manigat", "Rene Preval"],
+        "explanation": "Aristide est elu avec une large majorite et prend ses fonctions en fevrier 1991.",
+    },
+    {
+        "cat": "histoire", "diff": "easy",
+        "text": "Quel evenement devastateur frappe Haiti le 12 janvier 2010 ?",
+        "answers": ["Un tremblement de terre de magnitude 7,0", "Un ouragan de categorie 5", "Une eruption volcanique", "Un tsunami"],
+        "explanation": "Le seisme, centre pres de Port-au-Prince, fait des centaines de milliers de victimes.",
+    },
+    {
+        "cat": "histoire", "diff": "hard",
+        "text": "Quelle mission de maintien de la paix des Nations Unies est presente en Haiti de 2004 a 2017 ?",
+        "answers": ["La MINUSTAH", "La MONUSCO", "La FINUL", "La MINUSMA"],
+        "explanation": "La Mission des Nations Unies pour la stabilisation en Haiti (MINUSTAH) succede a une crise politique majeure.",
+    },
+    {
+        "cat": "histoire", "diff": "medium",
+        "text": "Quel evenement marque profondement la vie politique haitienne en juillet 2021 ?",
+        "answers": ["L'assassinat du president Jovenel Moise", "La demission du president", "Un coup d'Etat militaire reussi", "Des elections presidentielles"],
+        "explanation": "Le president Jovenel Moise est assassine a son domicile le 7 juillet 2021.",
+    },
+
+    # --- Heros et paroles celebres -----------------------------------------
+    {
+        "cat": "heros", "diff": "hard",
+        "text": (
+            "Quel heros aurait declare, lors de son arrestation en 1802 : 'En me renversant, on n'a abattu que "
+            "le tronc de l'arbre de la liberte des Noirs ; il repoussera par les racines...' ?"
+        ),
+        "answers": ["Toussaint Louverture", "Jean-Jacques Dessalines", "Henri Christophe", "Alexandre Petion"],
+        "explanation": "Cette phrase celebre est attribuee a Toussaint Louverture au moment de sa deportation.",
+    },
+    {
+        "cat": "heros", "diff": "medium",
+        "text": "Quel cri de guerre, signifiant 'coupez les tetes, brulez les maisons', est associe a Dessalines pendant la guerre de l'independance ?",
+        "answers": ["Koupe tet, boule kay", "Viv lib ou mouri", "Tout moun se moun", "Sa k pa kontan al vini"],
+        "explanation": "Ce cri symbolise la strategie de la terre brulee menee contre l'armee francaise.",
+    },
+    {
+        "cat": "heros", "diff": "medium",
+        "text": "Qui redonne a l'ancienne colonie de Saint-Domingue son nom indigene, 'Haiti', lors de la proclamation de l'independance en 1804 ?",
+        "answers": ["Jean-Jacques Dessalines", "Toussaint Louverture", "Henri Christophe", "Alexandre Petion"],
+        "explanation": "Dessalines choisit le nom taino 'Ayiti' pour marquer une rupture avec le passe colonial.",
+    },
+    {
+        "cat": "heros", "diff": "hard",
+        "text": (
+            "Quel president haitien fournit armes, navires et refuge a Simon Bolivar en 1816, en echange de la "
+            "promesse de liberer les esclaves des territoires liberes ?"
+        ),
+        "answers": ["Alexandre Petion", "Henri Christophe", "Jean-Pierre Boyer", "Faustin Soulouque"],
+        "explanation": "Le soutien de Petion a Bolivar a contribue aux independances sud-americaines.",
+    },
+    {
+        "cat": "heros", "diff": "hard",
+        "text": "Quelle heroine de la revolution haitienne combat aux cotes de son mari Charles Belair avant d'etre executee en 1802 ?",
+        "answers": ["Sanite Belair", "Catherine Flon", "Marie-Jeanne Lamartiniere", "Cecile Fatiman"],
+        "explanation": "Sanite Belair est une figure celebre de la resistance feminine haitienne.",
+    },
+    {
+        "cat": "heros", "diff": "medium",
+        "text": "Selon la tradition, qui coud le tout premier drapeau haitien au Congres de l'Arcahaie, en 1803 ?",
+        "answers": ["Catherine Flon", "Sanite Belair", "Marie-Jeanne Lamartiniere", "Cecile Fatiman"],
+        "explanation": "Catherine Flon, niece de Dessalines, est traditionnellement creditee de la couture du premier drapeau.",
+    },
+    {
+        "cat": "heros", "diff": "hard",
+        "text": "Qui est la mambo (pretresse vodou) traditionnellement associee a Dutty Boukman lors de la ceremonie du Bois-Caiman en 1791 ?",
+        "answers": ["Cecile Fatiman", "Sanite Belair", "Catherine Flon", "Marie-Jeanne Lamartiniere"],
+        "explanation": "Cecile Fatiman aurait co-officie la ceremonie qui declenche la revolution.",
+    },
+
+    # --- Geographie, approfondissement --------------------------------------
+    {
+        "cat": "geographie", "diff": "easy",
+        "text": "Quel ocean et quelle mer bordent Haiti ?",
+        "answers": ["L'ocean Atlantique et la mer des Caraibes", "L'ocean Pacifique et la mer Mediterranee", "L'ocean Indien et la mer Rouge", "L'ocean Arctique et la mer du Nord"],
+        "explanation": "Haiti est bordee au nord par l'Atlantique et au sud par la mer des Caraibes.",
+    },
+    {
+        "cat": "geographie", "diff": "medium",
+        "text": "Quelle est la superficie approximative d'Haiti ?",
+        "answers": ["Environ 27 750 km²", "Environ 100 000 km²", "Environ 10 000 km²", "Environ 500 000 km²"],
+        "explanation": "Haiti couvre environ 27 750 km², le tiers occidental de l'ile d'Hispaniola.",
+    },
+    {
+        "cat": "geographie", "diff": "medium",
+        "text": "Quel est le plus long fleuve d'Haiti, qui traverse notamment le departement de l'Artibonite ?",
+        "answers": ["La riviere Artibonite", "La riviere Grande Anse", "La riviere Massacre", "La riviere du Cul-de-Sac"],
+        "explanation": "L'Artibonite est le principal fleuve du pays et irrigue une vaste plaine agricole.",
+    },
+    {
+        "cat": "geographie", "diff": "medium",
+        "text": "Quelle est la plus grande ile satellite d'Haiti, situee dans le golfe qui porte son nom ?",
+        "answers": ["La Gonave", "La Tortue", "L'Ile a Vache", "La Navase"],
+        "explanation": "La Gonave, au large de Port-au-Prince, est la plus grande ile haitienne.",
+    },
+    {
+        "cat": "geographie", "diff": "hard",
+        "text": "Quelle ile au nord d'Haiti servait de repaire aux pirates et flibustiers au 17e siecle ?",
+        "answers": ["L'ile de la Tortue", "L'ile a Vache", "La Gonave", "La Navase"],
+        "explanation": "L'ile de la Tortue, au large du Nord-Ouest, fut un haut lieu de la flibuste caraibe.",
+    },
+    {
+        "cat": "geographie", "diff": "medium",
+        "text": "En quelle annee le departement des Nippes est-il cree, devenant le dixieme departement d'Haiti ?",
+        "answers": ["2003", "1990", "1804", "1957"],
+        "explanation": "Les Nippes sont detachees du departement de la Grand'Anse en 2003.",
+    },
+    {
+        "cat": "geographie", "diff": "easy",
+        "text": "Quelle est la deuxieme plus grande ville d'Haiti, situee dans le departement du Nord ?",
+        "answers": ["Cap-Haitien", "Jacmel", "Les Cayes", "Gonaives"],
+        "explanation": "Cap-Haitien, ancienne capitale coloniale, est le principal centre urbain du Nord.",
+    },
+    {
+        "cat": "geographie", "diff": "medium",
+        "text": "Dans quelle ville l'independance d'Haiti est-elle proclamee, le 1er janvier 1804 ?",
+        "answers": ["Les Gonaives", "Port-au-Prince", "Le Cap-Haitien", "Jacmel"],
+        "explanation": "Dessalines proclame l'independance aux Gonaives.",
+    },
+
+    # --- Constitution et droit -----------------------------------------------
+    {
+        "cat": "constitution", "diff": "medium",
+        "text": "Selon la Constitution de 1987, quelle est la duree du mandat presidentiel en Haiti ?",
+        "answers": ["5 ans", "4 ans", "6 ans", "7 ans"],
+        "explanation": "Le mandat presidentiel est de cinq ans.",
+    },
+    {
+        "cat": "constitution", "diff": "hard", "type": "true_false",
+        "text": "La Constitution de 1987 permet a un president haitien de briguer deux mandats consecutifs.",
+        "correct": False,
+        "explanation": "La reelection immediate est interdite ; un president ne peut se representer qu'apres avoir laisse passer un mandat.",
+    },
+    {
+        "cat": "constitution", "diff": "medium",
+        "text": "Quel organe est charge d'organiser et de superviser les elections en Haiti ?",
+        "answers": ["Le Conseil Electoral Provisoire (CEP)", "La Cour de Cassation", "Le Senat", "Le Conseil des ministres"],
+        "explanation": "Le CEP est l'institution en charge du processus electoral.",
+    },
+    {
+        "cat": "constitution", "diff": "medium",
+        "text": "Quelle est la plus haute juridiction de l'ordre judiciaire haitien ?",
+        "answers": ["La Cour de Cassation", "Le Tribunal de premiere instance", "Le Conseil Electoral Provisoire", "La Chambre des deputes"],
+        "explanation": "La Cour de Cassation statue en dernier ressort sur les questions de droit.",
+    },
+    {
+        "cat": "constitution", "diff": "easy",
+        "text": "A partir de quel age un citoyen haitien peut-il voter ?",
+        "answers": ["18 ans", "16 ans", "21 ans", "25 ans"],
+        "explanation": "La majorite electorale est fixee a 18 ans.",
+    },
+    {
+        "cat": "constitution", "diff": "hard",
+        "text": "Quel age minimum la Constitution de 1987 fixe-t-elle pour etre elu president d'Haiti ?",
+        "answers": ["35 ans", "18 ans", "25 ans", "40 ans"],
+        "explanation": "L'article 135 de la Constitution exige au moins 35 ans accomplis.",
+    },
+
+    # --- Civisme --------------------------------------------------------------
+    {
+        "cat": "civisme", "diff": "medium",
+        "text": "Quel document officiel un citoyen haitien doit-il posseder pour voter et pour de nombreuses demarches administratives ?",
+        "answers": ["La carte d'identification nationale (CIN)", "Le passeport uniquement", "Le permis de conduire uniquement", "Aucun document n'est necessaire"],
+        "explanation": "La CIN est le document d'identification de base des citoyens haitiens.",
+    },
+    {
+        "cat": "civisme", "diff": "hard",
+        "text": "Quel organisme haitien delivre la Carte d'Identification Nationale (CIN) ?",
+        "answers": ["L'Office National d'Identification (ONI)", "Le Conseil Electoral Provisoire (CEP)", "La Direction Generale des Impots (DGI)", "Le Ministere de la Justice"],
+        "explanation": "L'ONI est charge de l'enregistrement et de la delivrance de la CIN.",
+    },
 ]
 
 
