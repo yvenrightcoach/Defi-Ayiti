@@ -1,7 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Navigate, useLocation, useOutlet } from "react-router-dom";
 
-import AdBanner from "@/components/ui/AdBanner";
 import AnimatedBackground from "@/components/ui/AnimatedBackground";
 import BottomNav from "@/components/layout/BottomNav";
 import { useAuthStore } from "@/store/authStore";
@@ -16,7 +15,7 @@ export default function AppLayout() {
   }
 
   return (
-    <div className="min-h-screen pb-40">
+    <div className="min-h-screen pb-24">
       <AnimatedBackground variant="light" />
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.div
@@ -29,10 +28,7 @@ export default function AppLayout() {
           {element}
         </motion.div>
       </AnimatePresence>
-      <div className="fixed inset-x-0 bottom-0 z-50">
-        <AdBanner />
-        <BottomNav />
-      </div>
+      <BottomNav />
     </div>
   );
 }

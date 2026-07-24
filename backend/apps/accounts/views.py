@@ -67,32 +67,6 @@ class MeProfileView(RetrieveUpdateAPIView):
         return profile
 
 
-class ClaimAdRewardView(APIView):
-    """
-    Accorde un bonus de pieces apres visionnage d'une pub recompensee cote
-    client (voir frontend/src/lib/ads.ts). Plafonne a AD_REWARD_DAILY_LIMIT
-    par jour ; c'est la seule protection anti-abus tant qu'aucune
-    verification serveur-a-serveur du reseau publicitaire n'est branchee
-    (a activer avec un vrai compte AdMob/Ad Manager en production).
-    """
-
-    permission_classes = [IsAuthenticated]
-    throttle_scope = "ad_reward"
-
-    AD_REWARD_AMOUNT = 30
-    AD_REWARD_DAILY_LIMIT = 5
-
-    def post(self, request, *args, **kwargs):
-        profile, _ = UserProfile.objects.get_or_create(user=request.user)
-        awarded = profile.claim_ad_reward(amount=self.AD_REWARD_AMOUNT, daily_limit=self.AD_REWARD_DAILY_LIMIT)
-        if awarded is None:
-            return Response(
-                {"detail": "Limite quotidienne de recompenses publicitaires atteinte.", "coins_awarded": 0, "coins": profile.coins},
-                status=429,
-            )
-        return Response({"coins_awarded": awarded, "coins": profile.coins})
-
-
 class UserProfileViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Consultation publique (authentifiee) du profil d'un autre joueur.

@@ -260,7 +260,6 @@ REST_FRAMEWORK = {
         # logout, inscription, reset mot de passe) -- sans entree ici,
         # ScopedRateThrottle leve ImproperlyConfigured des la 1ere requete.
         "dj_rest_auth": "20/minute",
-        "ad_reward": "10/minute",
     },
 }
 
