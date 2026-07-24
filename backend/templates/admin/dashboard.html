@@ -1,0 +1,114 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<style>
+  .kpi-grid { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+  .kpi-card { background: var(--body-bg, #fff); border: 1px solid var(--hairline-color, #ddd);
+              border-radius: 8px; padding: 1rem 1.5rem; min-width: 160px; }
+  .kpi-card .value { font-size: 1.6rem; font-weight: bold; display: block; }
+  .kpi-card .label { color: var(--body-quiet-color, #666); font-size: 0.85rem; }
+  .dash-tables { display: flex; flex-wrap: wrap; gap: 1.5rem; }
+  .dash-tables .module { flex: 1; min-width: 320px; }
+</style>
+
+<h2>Vue d'ensemble</h2>
+<div class="kpi-grid">
+  <div class="kpi-card"><span class="value">{{ total_users }}</span><span class="label">Joueurs (dont {{ guest_users }} invites)</span></div>
+  <div class="kpi-card"><span class="value">{{ new_today }}</span><span class="label">Nouveaux joueurs aujourd'hui</span></div>
+  <div class="kpi-card"><span class="value">{{ new_this_week }}</span><span class="label">Nouveaux joueurs (7 jours)</span></div>
+  <div class="kpi-card"><span class="value">{{ online_count }}</span><span class="label">En ligne (5 dernieres minutes)</span></div>
+  <div class="kpi-card"><span class="value">{{ active_stakes }}</span><span class="label">Mises en cours</span></div>
+</div>
+
+<h2>Revenus (achats de diamants payes)</h2>
+<div class="kpi-grid">
+  <div class="kpi-card"><span class="value">{{ revenue.today|floatformat:2 }} $</span><span class="label">Aujourd'hui</span></div>
+  <div class="kpi-card"><span class="value">{{ revenue.week|floatformat:2 }} $</span><span class="label">7 derniers jours</span></div>
+  <div class="kpi-card"><span class="value">{{ revenue.month|floatformat:2 }} $</span><span class="label">30 derniers jours</span></div>
+  <div class="kpi-card"><span class="value">{{ revenue.total|floatformat:2 }} $</span><span class="label">Total</span></div>
+</div>
+
+<h2>Economie (pieces / diamants en circulation)</h2>
+<div class="kpi-grid">
+  <div class="kpi-card"><span class="value">{{ economy.total_coins|default:0 }} 🪙</span><span class="label">Pieces en circulation</span></div>
+  <div class="kpi-card"><span class="value">{{ economy.total_diamonds|default:0 }} 💎</span><span class="label">Diamants en circulation</span></div>
+</div>
+
+<div class="dash-tables">
+  <div class="module">
+    <h2>Joueurs en ligne</h2>
+    <table>
+      <thead><tr><th>Joueur</th><th>Derniere activite</th></tr></thead>
+      <tbody>
+        {% for p in online_users %}
+        <tr><td>{{ p.user.username }}</td><td>{{ p.last_seen }}</td></tr>
+        {% empty %}
+        <tr><td colspan="2">Personne en ligne pour le moment.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="module">
+    <h2>Top depenseurs</h2>
+    <table>
+      <thead><tr><th>Joueur</th><th>Achats</th><th>Total</th></tr></thead>
+      <tbody>
+        {% for row in top_spenders %}
+        <tr><td>{{ row.profile__user__username }}</td><td>{{ row.purchase_count }}</td><td>{{ row.total_usd|floatformat:2 }} $</td></tr>
+        {% empty %}
+        <tr><td colspan="3">Aucun achat paye pour le moment.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="module">
+    <h2>Top trophees</h2>
+    <table>
+      <thead><tr><th>Joueur</th><th>Trophees</th></tr></thead>
+      <tbody>
+        {% for p in top_trophies %}
+        <tr><td>{{ p.user.username }}</td><td>{{ p.trophies }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="module">
+    <h2>Top XP</h2>
+    <table>
+      <thead><tr><th>Joueur</th><th>Niveau</th><th>XP</th></tr></thead>
+      <tbody>
+        {% for p in top_xp %}
+        <tr><td>{{ p.user.username }}</td><td>{{ p.level }}</td><td>{{ p.xp }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="module">
+    <h2>Meilleures series de victoires</h2>
+    <table>
+      <thead><tr><th>Joueur</th><th>Serie record</th></tr></thead>
+      <tbody>
+        {% for p in top_streak %}
+        <tr><td>{{ p.user.username }}</td><td>{{ p.best_win_streak }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="module">
+    <h2>Progression par departement (mode Aventure)</h2>
+    <table>
+      <thead><tr><th>#</th><th>Departement</th><th>Chapitres termines</th></tr></thead>
+      <tbody>
+        {% for d in department_completion %}
+        <tr><td>{{ d.order }}</td><td>{{ d.name }}</td><td>{{ d.completions }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

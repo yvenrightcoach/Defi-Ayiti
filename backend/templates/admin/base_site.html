@@ -1,0 +1,11 @@
+{% extends "admin/base.html" %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">Defi Ayiti — Administration</a></h1>
+{% endblock %}
+
+{% block nav-global %}
+<a href="{% url 'admin-dashboard' %}" style="color:#fff;margin-left:1rem;font-weight:bold;">
+  📊 Tableau de bord
+</a>
+{% endblock %}

@@ -34,3 +34,9 @@ CELERY_TASK_EAGER_PROPAGATES = True
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 
 GUEST_MODE_ENABLED = True
+
+# Le stockage manifeste (whitenoise/S3) exige un manifest genere par
+# `collectstatic`, absent en test. Le tableau de bord admin rend un vrai
+# template Django (contrairement au reste de l'API, en JSON) et a donc
+# besoin que {% static %} se resolve sans manifest ici.
+STORAGES = {**STORAGES, "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"}}

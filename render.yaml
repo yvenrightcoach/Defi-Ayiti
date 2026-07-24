@@ -29,7 +29,7 @@ services:
     rootDir: backend
     plan: free
     region: oregon
-    buildCommand: "pip install -r requirements/production.txt && python manage.py collectstatic --noinput && python manage.py migrate && python manage.py seed_content"
+    buildCommand: "pip install -r requirements/production.txt && python manage.py collectstatic --noinput && python manage.py migrate && python manage.py seed_content && python manage.py ensure_admin"
     startCommand: "daphne -b 0.0.0.0 -p $PORT config.asgi:application"
     healthCheckPath: /healthz/
     envVars:
@@ -50,6 +50,16 @@ services:
       - key: CSRF_TRUSTED_ORIGINS
         sync: false
       - key: SENTRY_DSN
+        sync: false
+      # Compte super admin (/admin/), cree automatiquement au build s'il
+      # n'existe pas encore -- necessaire car le plan gratuit Render n'a pas
+      # de Shell pour lancer `createsuperuser` a la main. Change le mot de
+      # passe apres la premiere connexion si tu veux le retirer des env vars.
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
         sync: false
 
   # Frontend PWA (site statique) -- alternative equivalente : Vercel ou Netlify

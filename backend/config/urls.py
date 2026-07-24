@@ -4,6 +4,8 @@ from django.http import JsonResponse
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
+from apps.accounts.admin_views import dashboard_view
+
 
 def healthz(request):
     """Verification de sante pour Render (et tout autre orchestrateur)."""
@@ -25,6 +27,7 @@ api_v1_patterns = [
 
 urlpatterns = [
     path("healthz/", healthz, name="healthz"),
+    path("admin/dashboard/", dashboard_view, name="admin-dashboard"),
     path("admin/", admin.site.urls),
     path("api/v1/", include(api_v1_patterns)),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),

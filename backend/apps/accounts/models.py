@@ -63,6 +63,7 @@ class UserProfile(BaseModel):
     league = models.CharField(max_length=20, choices=League.choices, default=League.BRONZE)
     win_streak = models.PositiveIntegerField(default=0)
     best_win_streak = models.PositiveIntegerField(default=0)
+    last_seen = models.DateTimeField(null=True, blank=True, help_text="Derniere requete authentifiee (presence en ligne)")
 
     class Meta:
         verbose_name = "Profil joueur"
