@@ -62,6 +62,7 @@ LOCAL_APPS = [
     "apps.competition",
     "apps.rewards",
     "apps.notifications",
+    "apps.payments",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -260,6 +261,7 @@ REST_FRAMEWORK = {
         # logout, inscription, reset mot de passe) -- sans entree ici,
         # ScopedRateThrottle leve ImproperlyConfigured des la 1ere requete.
         "dj_rest_auth": "20/minute",
+        "payments": "20/minute",
     },
 }
 
@@ -346,3 +348,12 @@ CORS_ALLOWED_ORIGINS = env.list(
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=["http://localhost:5173"])
+
+# ---------------------------------------------------------------------------
+# Paiements -- Stripe (achats de packs de diamants avec de l'argent reel)
+# ---------------------------------------------------------------------------
+FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:5173")
+
+STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY", default="")
+STRIPE_PUBLISHABLE_KEY = env("STRIPE_PUBLISHABLE_KEY", default="")
+STRIPE_WEBHOOK_SECRET = env("STRIPE_WEBHOOK_SECRET", default="")

@@ -41,3 +41,6 @@ gunicorn==23.0.0
 
 # --- Client Supabase (auth admin, RPC, etc. cote serveur) ---
 supabase==2.9.1
+
+# --- Paiements (achats de packs de diamants) ---
+stripe==15.3.1

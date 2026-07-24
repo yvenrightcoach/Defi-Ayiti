@@ -20,6 +20,7 @@ api_v1_patterns = [
     path("competition/", include("apps.competition.urls")),
     path("rewards/", include("apps.rewards.urls")),
     path("notifications/", include("apps.notifications.urls")),
+    path("payments/", include("apps.payments.urls")),
 ]
 
 urlpatterns = [

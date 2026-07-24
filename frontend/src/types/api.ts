@@ -317,6 +317,14 @@ export interface Purchase {
   purchased_at: string;
 }
 
+export interface DiamondPack {
+  id: string;
+  name: string;
+  diamonds_amount: number;
+  price_usd_cents: number;
+  order: number;
+}
+
 export interface AppNotification {
   id: string;
   notification_type: string;

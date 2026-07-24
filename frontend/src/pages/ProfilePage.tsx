@@ -1,25 +1,62 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import Loader from "@/components/ui/Loader";
 import { useCountUp } from "@/hooks/useCountUp";
 import { LEAGUE_COLORS, LEAGUE_LABELS } from "@/lib/leagues";
+import { createStripeCheckout, listDiamondPacks } from "@/services/endpoints/payments";
 import { useAuthStore } from "@/store/authStore";
 import { useProfileStore } from "@/store/profileStore";
 import { useSoundStore } from "@/store/soundStore";
+import type { DiamondPack } from "@/types/api";
+
+function formatUsd(cents: number): string {
+  return `${(cents / 100).toFixed(2)} $`;
+}
 
 export default function ProfilePage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const logout = useAuthStore((state) => state.logout);
   const { profile, isLoading, refresh } = useProfileStore();
   const soundEnabled = useSoundStore((state) => state.enabled);
   const toggleSound = useSoundStore((state) => state.toggle);
 
+  const [packs, setPacks] = useState<DiamondPack[]>([]);
+  const [processingPackId, setProcessingPackId] = useState<string | null>(null);
+  const [purchaseError, setPurchaseError] = useState<string | null>(null);
+  const [paymentBanner] = useState<string | null>(() => searchParams.get("paiement"));
+
   useEffect(() => {
     void refresh();
   }, [refresh]);
+
+  useEffect(() => {
+    void listDiamondPacks().then(setPacks);
+  }, []);
+
+  useEffect(() => {
+    if (!paymentBanner) return;
+    if (paymentBanner === "succes") void refresh();
+    const next = new URLSearchParams(searchParams);
+    next.delete("paiement");
+    setSearchParams(next, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function handleBuyPack(pack: DiamondPack) {
+    setPurchaseError(null);
+    setProcessingPackId(pack.id);
+    try {
+      const checkoutUrl = await createStripeCheckout(pack.id);
+      window.location.href = checkoutUrl;
+    } catch {
+      setPurchaseError("Impossible de lancer le paiement pour le moment.");
+      setProcessingPackId(null);
+    }
+  }
 
   function handleLogout() {
     logout();
@@ -33,6 +70,17 @@ export default function ProfilePage() {
 
   return (
     <section className="min-h-screen p-4">
+      {paymentBanner === "succes" && (
+        <div className="card-game mb-3 bg-haiti-green/10 text-center font-display text-haiti-green">
+          Paiement reussi, tes diamants sont credites !
+        </div>
+      )}
+      {paymentBanner === "annule" && (
+        <div className="card-game mb-3 bg-slate-100 text-center font-display text-slate-500">
+          Paiement annule.
+        </div>
+      )}
+
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -73,6 +121,29 @@ export default function ProfilePage() {
         <StatCard label="Trophees" value={profile.trophies} icon="🏆" />
         <StatCard label="Serie de victoires" value={profile.win_streak} icon="🔥" />
       </div>
+
+      {packs.length > 0 && (
+        <div className="card-game mt-4">
+          <p className="mb-2 font-display text-haiti-blue">💎 Acheter des diamants</p>
+          {purchaseError && <p className="mb-2 text-sm text-haiti-red">{purchaseError}</p>}
+          <div className="space-y-2">
+            {packs.map((pack) => (
+              <button
+                key={pack.id}
+                type="button"
+                onClick={() => handleBuyPack(pack)}
+                disabled={processingPackId !== null}
+                className="btn-game-outline flex w-full items-center justify-between disabled:opacity-60"
+              >
+                <span>
+                  💎 {pack.diamonds_amount} diamants
+                </span>
+                <span>{processingPackId === pack.id ? "..." : formatUsd(pack.price_usd_cents)}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="card-game mt-4 text-sm text-slate-600">
         <p>
