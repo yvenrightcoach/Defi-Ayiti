@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useGlobalClickSound } from "@/hooks/useGlobalClickSound";
 import { useMenuMusic } from "@/hooks/useMenuMusic";
 import AppLayout from "@/components/layout/AppLayout";
+import InstallBanner from "@/components/ui/InstallBanner";
 import AdventureMapPage from "@/pages/AdventureMapPage";
 import BattlePage from "@/pages/BattlePage";
 import DepartmentDetailPage from "@/pages/DepartmentDetailPage";
@@ -21,24 +22,27 @@ export default function App() {
   useMenuMusic(location.pathname);
 
   return (
-    <Routes>
-      <Route path="/connexion" element={<LoginPage />} />
-      <Route path="/reinitialiser-mot-de-passe" element={<ResetPasswordPage />} />
+    <>
+      <InstallBanner />
+      <Routes>
+        <Route path="/connexion" element={<LoginPage />} />
+        <Route path="/reinitialiser-mot-de-passe" element={<ResetPasswordPage />} />
 
-      <Route element={<AppLayout />}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/aventure" element={<AdventureMapPage />} />
-        <Route path="/aventure/:departmentId" element={<DepartmentDetailPage />} />
-        <Route path="/quiz" element={<QuizPage />} />
-        <Route path="/quiz/level/:levelId" element={<QuizPage />} />
-        <Route path="/battle" element={<BattlePage />} />
-        <Route path="/heros" element={<HeroesPage />} />
-        <Route path="/amis" element={<FriendsPage />} />
-        <Route path="/classements" element={<LeaderboardPage />} />
-        <Route path="/profil" element={<ProfilePage />} />
-      </Route>
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/aventure" element={<AdventureMapPage />} />
+          <Route path="/aventure/:departmentId" element={<DepartmentDetailPage />} />
+          <Route path="/quiz" element={<QuizPage />} />
+          <Route path="/quiz/level/:levelId" element={<QuizPage />} />
+          <Route path="/battle" element={<BattlePage />} />
+          <Route path="/heros" element={<HeroesPage />} />
+          <Route path="/amis" element={<FriendsPage />} />
+          <Route path="/classements" element={<LeaderboardPage />} />
+          <Route path="/profil" element={<ProfilePage />} />
+        </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   );
 }
