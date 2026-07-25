@@ -97,6 +97,7 @@ HEROES = [
         ),
         "rarity": "legendary",
         "order": 1,
+        "department": "nord-est",
     },
     {
         "slug": "jean-jacques-dessalines",
@@ -110,6 +111,7 @@ HEROES = [
         "quote": "L'independance ou la mort.",
         "rarity": "legendary",
         "order": 2,
+        "department": "artibonite",
     },
     {
         "slug": "henri-christophe",
@@ -122,6 +124,7 @@ HEROES = [
         "quote": "",
         "rarity": "epic",
         "order": 3,
+        "department": "nord",
     },
     {
         "slug": "alexandre-petion",
@@ -134,6 +137,7 @@ HEROES = [
         "quote": "",
         "rarity": "epic",
         "order": 4,
+        "department": "grand-anse",
     },
     {
         "slug": "catherine-flon",
@@ -146,6 +150,7 @@ HEROES = [
         "quote": "",
         "rarity": "rare",
         "order": 5,
+        "department": "ouest",
     },
     {
         "slug": "capois-la-mort",
@@ -159,6 +164,7 @@ HEROES = [
         "quote": "",
         "rarity": "rare",
         "order": 6,
+        "department": "nord-ouest",
     },
     {
         "slug": "charlemagne-peralte",
@@ -171,6 +177,7 @@ HEROES = [
         "quote": "",
         "rarity": "epic",
         "order": 7,
+        "department": "centre",
     },
     {
         "slug": "anacaona",
@@ -183,6 +190,7 @@ HEROES = [
         "quote": "",
         "rarity": "rare",
         "order": 8,
+        "department": "sud",
     },
     {
         "slug": "sanite-belair",
@@ -195,6 +203,7 @@ HEROES = [
         "quote": "",
         "rarity": "rare",
         "order": 9,
+        "department": "sud-est",
     },
     {
         "slug": "marie-jeanne-lamartiniere",
@@ -207,6 +216,7 @@ HEROES = [
         "quote": "",
         "rarity": "rare",
         "order": 10,
+        "department": "nippes",
     },
 
     # --- Heros bonus : pas lies a un chapitre precis, obtenus au hasard
@@ -224,6 +234,7 @@ HEROES = [
         "quote": "",
         "rarity": "legendary",
         "order": 11,
+        "unlock_level": 22,
     },
     {
         "slug": "cecile-fatiman",
@@ -236,6 +247,7 @@ HEROES = [
         "quote": "",
         "rarity": "epic",
         "order": 12,
+        "unlock_level": 14,
     },
     {
         "slug": "vincent-oge",
@@ -249,6 +261,7 @@ HEROES = [
         "quote": "",
         "rarity": "epic",
         "order": 13,
+        "unlock_level": 14,
     },
     {
         "slug": "jean-baptiste-chavannes",
@@ -261,6 +274,7 @@ HEROES = [
         "quote": "",
         "rarity": "rare",
         "order": 14,
+        "unlock_level": 6,
     },
     {
         "slug": "nicolas-geffrard",
@@ -273,6 +287,7 @@ HEROES = [
         "quote": "",
         "rarity": "rare",
         "order": 15,
+        "unlock_level": 6,
     },
     {
         "slug": "justin-lherisson",
@@ -285,6 +300,7 @@ HEROES = [
         "quote": "",
         "rarity": "rare",
         "order": 16,
+        "unlock_level": 6,
     },
     {
         "slug": "oswald-durand",
@@ -297,6 +313,7 @@ HEROES = [
         "quote": "",
         "rarity": "common",
         "order": 17,
+        "unlock_level": 1,
     },
     {
         "slug": "jean-price-mars",
@@ -310,6 +327,7 @@ HEROES = [
         "quote": "",
         "rarity": "common",
         "order": 18,
+        "unlock_level": 1,
     },
     {
         "slug": "nemours-jean-baptiste",
@@ -322,6 +340,7 @@ HEROES = [
         "quote": "",
         "rarity": "common",
         "order": 19,
+        "unlock_level": 1,
     },
     {
         "slug": "jovenel-moise",
@@ -334,6 +353,143 @@ HEROES = [
         "quote": "",
         "rarity": "legendary",
         "order": 20,
+        "unlock_level": 22,
+    },
+
+    # --- Deuxieme vague de heros bonus : enrichit l'echelle de progression
+    # (voir RARITY_UNLOCK_LEVEL cote seed et BONUS_HERO_DROP_RATES cote
+    # backend) avec des figures de la litterature, de la politique et de la
+    # resistance a l'occupation americaine.
+    {
+        "slug": "marie-claire-heureuse-bonheur",
+        "name": "Marie-Claire Heureuse Bonheur",
+        "biography": (
+            "Epouse de Jean-Jacques Dessalines et premiere imperatrice d'Haiti, "
+            "elle reste dans la memoire collective pour avoir plaide la "
+            "clemence envers des colons francais menaces de represailles apres "
+            "l'independance."
+        ),
+        "quote": "",
+        "rarity": "common",
+        "order": 21,
+        "unlock_level": 1,
+    },
+    {
+        "slug": "stenio-vincent",
+        "name": "Stenio Vincent",
+        "biography": (
+            "President d'Haiti de 1930 a 1941, il negocie le retrait des "
+            "troupes americaines qui occupaient le pays depuis 1915, mettant "
+            "fin en 1934 a dix-neuf ans d'occupation."
+        ),
+        "quote": "",
+        "rarity": "common",
+        "order": 22,
+        "unlock_level": 1,
+    },
+    {
+        "slug": "jacques-roumain",
+        "name": "Jacques Roumain",
+        "biography": (
+            "Ecrivain et ethnologue, il fonde le premier parti communiste "
+            "haitien et publie en 1944 'Gouverneurs de la rosee', une oeuvre "
+            "majeure de la litterature haitienne."
+        ),
+        "quote": "",
+        "rarity": "rare",
+        "order": 23,
+        "unlock_level": 6,
+    },
+    {
+        "slug": "faustin-soulouque",
+        "name": "Faustin Soulouque",
+        "biography": (
+            "Ancien esclave devenu president puis empereur d'Haiti sous le nom "
+            "de Faustin Ier (1849-1859), son regne marque une periode "
+            "charniere de l'histoire politique haitienne du 19e siecle."
+        ),
+        "quote": "",
+        "rarity": "rare",
+        "order": 24,
+        "unlock_level": 6,
+    },
+    {
+        "slug": "fabre-geffrard",
+        "name": "Fabre Geffrard",
+        "biography": (
+            "President d'Haiti de 1859 a 1867, il developpe l'enseignement "
+            "public et signe en 1860 un concordat avec le Vatican qui "
+            "restera en vigueur pendant plusieurs decennies."
+        ),
+        "quote": "",
+        "rarity": "rare",
+        "order": 25,
+        "unlock_level": 6,
+    },
+    {
+        "slug": "marie-vieux-chauvet",
+        "name": "Marie Vieux-Chauvet",
+        "biography": (
+            "Romanciere haitienne, autrice de la trilogie 'Amour, colere et "
+            "folie' (1968), qui denonce avec force la violence politique et "
+            "sociale de son epoque."
+        ),
+        "quote": "",
+        "rarity": "rare",
+        "order": 26,
+        "unlock_level": 6,
+    },
+    {
+        "slug": "antenor-firmin",
+        "name": "Antenor Firmin",
+        "biography": (
+            "Anthropologue et homme politique, il publie en 1885 'De "
+            "l'egalite des races humaines', un ouvrage pionnier qui refute "
+            "les theories racistes de son epoque."
+        ),
+        "quote": "",
+        "rarity": "epic",
+        "order": 27,
+        "unlock_level": 14,
+    },
+    {
+        "slug": "benoit-batraville",
+        "name": "Benoit Batraville",
+        "biography": (
+            "Chef cacos, il prend la tete de la resistance armee contre "
+            "l'occupation americaine apres la mort de Charlemagne Peralte en "
+            "1919, jusqu'a sa propre mort au combat l'annee suivante."
+        ),
+        "quote": "",
+        "rarity": "epic",
+        "order": 28,
+        "unlock_level": 14,
+    },
+    {
+        "slug": "dumarsais-estime",
+        "name": "Dumarsais Estime",
+        "biography": (
+            "President d'Haiti de 1946 a 1950, il elargit le droit de vote et "
+            "soutient l'affirmation de la culture noire et populaire "
+            "haitienne durant son mandat."
+        ),
+        "quote": "",
+        "rarity": "epic",
+        "order": 29,
+        "unlock_level": 14,
+    },
+    {
+        "slug": "franketienne",
+        "name": "Franketienne",
+        "biography": (
+            "Ecrivain, peintre et dramaturge, fondateur du mouvement "
+            "litteraire du spiralisme, il est l'une des figures culturelles "
+            "haitiennes les plus celebrees de son vivant."
+        ),
+        "quote": "",
+        "rarity": "legendary",
+        "order": 30,
+        "unlock_level": 22,
     },
 ]
 
@@ -1377,6 +1533,14 @@ class Command(BaseCommand):
                     "order": data["order"],
                 },
             )
+            # Applique a chaque run (pas seulement a la creation) : permet de
+            # brancher retroactivement le departement (heros de chapitre) et
+            # le palier de niveau requis (heros bonus, echelle de progression)
+            # sur des heros deja semes avant l'ajout de ces champs.
+            department_slug = data.get("department")
+            hero.department = Department.objects.filter(slug=department_slug).first() if department_slug else None
+            hero.unlock_level = data.get("unlock_level", 1)
+            hero.save(update_fields=["department", "unlock_level"])
             heroes[data["slug"]] = hero
         return heroes
 

@@ -126,6 +126,24 @@ class TestBonusHeroDrop:
 
         assert response.data["hero_unlocked"] is None
 
+    def test_bonus_hero_is_not_drawn_before_reaching_its_unlock_level(self, auth_client, level_with_bonus_pool):
+        """Un heros bonus dont le unlock_level depasse le niveau du joueur reste hors de portee,
+        meme si le tirage de rarete reussit -- c'est l'echelle de progression qui incite a rejouer."""
+        client, profile = auth_client
+        level, legendary_bonus, common_bonus = level_with_bonus_pool
+        legendary_bonus.unlock_level = 10
+        legendary_bonus.save(update_fields=["unlock_level"])
+        assert profile.level == 1
+
+        with patch("apps.progress.views.random.random", return_value=0.0):
+            response = client.post(
+                "/api/v1/progress/entries/complete-level/",
+                {"level_id": str(level.id), "score_percent": 80},
+            )
+
+        # Le legendaire est hors-niveau : le tirage retombe sur le commun accessible.
+        assert response.data["hero_unlocked"]["id"] == str(common_bonus.id)
+
     def test_a_hero_linked_to_a_level_is_never_drawn_as_bonus(self, auth_client):
         """Un heros deja lie a un chapitre (unlocks_hero) ne doit jamais sortir du pool bonus."""
         client, _ = auth_client

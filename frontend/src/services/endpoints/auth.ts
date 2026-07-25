@@ -27,8 +27,16 @@ export async function fetchMe(): Promise<UserProfile> {
   return data;
 }
 
-export async function updateMe(payload: Partial<Pick<UserProfile, "avatar_url" | "active_frame" | "department">>) {
+export async function updateMe(
+  payload: Partial<{ avatar_url: string; active_frame: string | null; department: string | null }>,
+) {
   const { data } = await apiClient.patch<UserProfile>("/auth/me/", payload);
+  return data;
+}
+
+/** Choisit un heros debloque comme photo de profil (ou `null` pour revenir a avatar_url/l'avatar par defaut). */
+export async function setAvatarHero(heroId: string | null): Promise<UserProfile> {
+  const { data } = await apiClient.patch<UserProfile>("/auth/me/", { avatar_hero: heroId });
   return data;
 }
 

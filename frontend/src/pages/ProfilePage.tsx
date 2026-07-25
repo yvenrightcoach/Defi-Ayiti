@@ -3,7 +3,9 @@ import { motion } from "framer-motion";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import ErrorMessage from "@/components/ui/ErrorMessage";
+import HeroPortrait from "@/components/ui/HeroPortrait";
 import Loader from "@/components/ui/Loader";
+import { getHeroLook } from "@/data/heroPortraits";
 import { useCountUp } from "@/hooks/useCountUp";
 import { LEAGUE_COLORS, LEAGUE_LABELS } from "@/lib/leagues";
 import { getErrorMessage } from "@/lib/errors";
@@ -112,12 +114,24 @@ export default function ProfilePage() {
         animate={{ opacity: 1, y: 0 }}
         className="card-game flex flex-col items-center text-center"
       >
-        <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 border-haiti-blueLight bg-haiti-blue/10 text-4xl shadow-card">
-          {profile.avatar_url ? (
-            <img src={profile.avatar_url} alt="Avatar" className="h-full w-full object-cover" />
-          ) : (
-            "👤"
-          )}
+        <div className="relative">
+          <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 border-haiti-blueLight bg-haiti-blue/10 text-4xl shadow-card">
+            {profile.avatar_hero ? (
+              <HeroPortrait look={getHeroLook(profile.avatar_hero.slug)} rarity={profile.avatar_hero.rarity} className="h-full w-full" />
+            ) : profile.avatar_url ? (
+              <img src={profile.avatar_url} alt="Avatar" className="h-full w-full object-cover" />
+            ) : (
+              "👤"
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate("/heros")}
+            aria-label="Changer de photo de profil"
+            className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-haiti-yellow text-sm shadow-card"
+          >
+            ✏️
+          </button>
         </div>
         <h1 className="mt-3 text-xl font-display text-haiti-blue">{profile.user.username}</h1>
         <span

@@ -46,6 +46,14 @@ class UserProfile(BaseModel):
 
     user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
     avatar_url = models.URLField(blank=True)
+    avatar_hero = models.ForeignKey(
+        "heroes.Hero",
+        null=True,
+        blank=True,
+        related_name="+",
+        on_delete=models.SET_NULL,
+        help_text="Heros debloque choisi comme photo de profil (remplace avatar_url a l'affichage)",
+    )
     active_frame = models.ForeignKey(
         "rewards.Reward", null=True, blank=True, related_name="+", on_delete=models.SET_NULL
     )

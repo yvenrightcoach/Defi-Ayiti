@@ -185,13 +185,21 @@ class PlayerProgressViewSet(viewsets.ReadOnlyModelViewSet):
         ajouter a la collection du joueur. Les raretes sont testees de la
         plus rare a la plus commune ; des qu'un tirage reussit et qu'un
         heros de cette rarete reste a debloquer, il est accorde.
+
+        Chaque heros bonus a aussi un niveau de joueur minimum (voir
+        Hero.unlock_level, cf. seed_content) : les meilleures raretes restent
+        hors de portee tant que le joueur n'a pas assez progresse, ce qui
+        transforme la collection en objectif de progression visible plutot
+        qu'en pure loterie des le niveau 1.
         """
         owned_ids = HeroCard.objects.filter(profile=profile).values_list("hero_id", flat=True)
         for rarity, chance in BONUS_HERO_DROP_RATES.items():
             if random.random() > chance:
                 continue
             candidates = list(
-                Hero.objects.filter(rarity=rarity, unlocked_by_levels__isnull=True).exclude(id__in=owned_ids)
+                Hero.objects.filter(
+                    rarity=rarity, unlocked_by_levels__isnull=True, unlock_level__lte=profile.level
+                ).exclude(id__in=owned_ids)
             )
             if candidates:
                 hero = random.choice(candidates)

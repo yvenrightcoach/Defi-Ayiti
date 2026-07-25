@@ -283,7 +283,7 @@ Pages connectees a l'API (plus plus de donnees factices) :
 | DepartmentDetailPage | `/aventure/:id` | Chapitres du departement, verrouilles selon la progression |
 | QuizPage | `/quiz`, `/quiz/level/:levelId` | Questions -> soumission -> XP -> ecran de fin (deblocage de heros + confettis si chapitre boss) |
 | ProfilePage | `/profil` | Stats completes, badge de ligue, deconnexion |
-| HeroesPage | `/heros` | Collection avec etats verrouille/debloque + fiche heros |
+| HeroesPage | `/heros` | Collection (heros de chapitre + heros bonus par palier de niveau) avec portraits cartoon generes en SVG, fiche heros et choix comme photo de profil |
 | LeaderboardPage | `/classements` | Filtres scope (national/amis) x periode, bandeau recompense + vainqueur precedent |
 | FriendsPage | `/amis` | Recherche par pseudo, demandes, liste d'amis |
 | BattlePage | `/battle` | Creation/jonction de salle par code, lancement de match, quiz synchronise par polling, cloture avec classement |

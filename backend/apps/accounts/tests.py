@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from apps.accounts.models import User, UserProfile
+from apps.heroes.models import Hero, HeroCard
 
 
 @pytest.mark.django_db
@@ -65,6 +66,39 @@ class TestMeEndpoint:
         profile.refresh_from_db()
         assert profile.coins == 100
         assert profile.xp == 0
+
+    def test_can_set_avatar_hero_when_unlocked(self, auth_client):
+        client, profile = auth_client
+        hero = Hero.objects.create(name="Dessalines", slug="dessalines", biography="...")
+        HeroCard.objects.create(profile=profile, hero=hero)
+
+        response = client.patch("/api/v1/auth/me/", {"avatar_hero": str(hero.id)})
+
+        assert response.status_code == 200
+        profile.refresh_from_db()
+        assert profile.avatar_hero_id == hero.id
+
+    def test_cannot_set_avatar_hero_when_not_unlocked(self, auth_client):
+        client, profile = auth_client
+        hero = Hero.objects.create(name="Dessalines", slug="dessalines", biography="...")
+
+        response = client.patch("/api/v1/auth/me/", {"avatar_hero": str(hero.id)})
+
+        assert response.status_code == 400
+        profile.refresh_from_db()
+        assert profile.avatar_hero_id is None
+
+    def test_can_clear_avatar_hero(self, auth_client):
+        client, profile = auth_client
+        hero = Hero.objects.create(name="Dessalines", slug="dessalines", biography="...")
+        HeroCard.objects.create(profile=profile, hero=hero)
+        client.patch("/api/v1/auth/me/", {"avatar_hero": str(hero.id)})
+
+        response = client.patch("/api/v1/auth/me/", {"avatar_hero": None}, format="json")
+
+        assert response.status_code == 200
+        profile.refresh_from_db()
+        assert profile.avatar_hero_id is None
 
 
 @pytest.mark.django_db

@@ -14,10 +14,18 @@ export type League =
   | "master"
   | "champion";
 
+export interface AvatarHero {
+  id: string;
+  name: string;
+  slug: string;
+  rarity: HeroRarity;
+}
+
 export interface UserProfile {
   id: string;
   user: { id: string; username: string; is_guest: boolean };
   avatar_url: string;
+  avatar_hero: AvatarHero | null;
   active_frame: string | null;
   department: string | null;
   department_detail: Department | null;
@@ -114,6 +122,8 @@ export interface AnswerResult {
   xp_awarded: number;
 }
 
+export type HeroRarity = "common" | "rare" | "epic" | "legendary";
+
 export interface Hero {
   id: string;
   name: string;
@@ -123,8 +133,9 @@ export interface Hero {
   biography: string;
   quote: string;
   department: string | null;
+  department_name: string;
   unlock_level: number;
-  rarity: "common" | "rare" | "epic" | "legendary";
+  rarity: HeroRarity;
   order: number;
   is_unlocked: boolean;
 }

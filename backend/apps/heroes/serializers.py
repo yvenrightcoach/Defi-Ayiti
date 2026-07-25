@@ -8,12 +8,13 @@ class HeroSerializer(serializers.ModelSerializer):
     """Catalogue des heros, avec 'is_unlocked' calcule pour le joueur connecte."""
 
     is_unlocked = serializers.SerializerMethodField()
+    department_name = serializers.CharField(source="department.name", read_only=True, default="")
 
     class Meta:
         model = Hero
         fields = (
             "id", "name", "slug", "image", "card_image", "biography", "quote",
-            "department", "unlock_level", "rarity", "order", "is_unlocked",
+            "department", "department_name", "unlock_level", "rarity", "order", "is_unlocked",
         )
 
     def get_is_unlocked(self, obj) -> bool:

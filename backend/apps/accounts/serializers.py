@@ -5,6 +5,7 @@ from django.conf import settings
 from rest_framework import serializers
 
 from apps.geography.serializers import DepartmentSerializer
+from apps.heroes.models import Hero
 
 from .models import User, UserProfile
 
@@ -18,21 +19,31 @@ class UserBasicSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+class AvatarHeroSerializer(serializers.ModelSerializer):
+    """Version minimale d'un Hero, imbriquee dans le profil pour l'avatar choisi."""
+
+    class Meta:
+        model = Hero
+        fields = ("id", "name", "slug", "rarity")
+        read_only_fields = fields
+
+
 class UserProfileSerializer(serializers.ModelSerializer):
     """Profil de jeu complet -- utilise pour /accounts/me/ et la lecture publique."""
 
     user = UserBasicSerializer(read_only=True)
     department_detail = DepartmentSerializer(source="department", read_only=True)
+    avatar_hero = AvatarHeroSerializer(read_only=True)
 
     class Meta:
         model = UserProfile
         fields = (
-            "id", "user", "avatar_url", "active_frame", "department", "department_detail",
+            "id", "user", "avatar_url", "avatar_hero", "active_frame", "department", "department_detail",
             "level", "xp", "points", "trophies", "coins", "diamonds",
             "league", "win_streak", "best_win_streak", "created_at",
         )
         read_only_fields = (
-            "id", "user", "level", "xp", "points", "trophies", "coins", "diamonds",
+            "id", "user", "avatar_hero", "level", "xp", "points", "trophies", "coins", "diamonds",
             "league", "win_streak", "best_win_streak", "created_at", "department_detail",
         )
 
@@ -42,7 +53,14 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ("avatar_url", "active_frame", "department")
+        fields = ("avatar_url", "avatar_hero", "active_frame", "department")
+
+    def validate_avatar_hero(self, hero):
+        if hero is None:
+            return hero
+        if not hero.cards.filter(profile=self.instance).exists():
+            raise serializers.ValidationError("Ce heros n'est pas encore debloque.")
+        return hero
 
 
 class GuestLoginResponseSerializer(serializers.Serializer):
