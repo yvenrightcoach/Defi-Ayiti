@@ -93,7 +93,8 @@ export default function ProfilePage() {
   if (isLoading && !profile) return <Loader label="Chargement du profil..." />;
   if (!profile) return <ErrorMessage message="Impossible de charger le profil." onRetry={() => void refresh()} />;
 
-  const xpIntoLevel = profile.xp % 100;
+  const xpIntoLevel = profile.xp_into_level;
+  const xpForNextLevel = profile.xp_for_next_level;
 
   return (
     <section className="min-h-screen p-4">
@@ -142,12 +143,12 @@ export default function ProfilePage() {
         <div className="mt-4 w-full">
           <div className="flex justify-between text-sm font-display text-slate-500">
             <span>Niveau {profile.level}</span>
-            <span>{xpIntoLevel}/100 XP</span>
+            <span>{xpIntoLevel}/{xpForNextLevel} XP</span>
           </div>
           <div className="mt-1 h-3 overflow-hidden rounded-pill border-2 border-haiti-blue/10 bg-white">
             <motion.div
               className="h-full rounded-pill bg-haiti-green"
-              animate={{ width: `${xpIntoLevel}%` }}
+              animate={{ width: `${xpForNextLevel ? Math.min(100, Math.round((xpIntoLevel / xpForNextLevel) * 100)) : 100}%` }}
               transition={{ type: "spring", stiffness: 200, damping: 25 }}
             />
           </div>

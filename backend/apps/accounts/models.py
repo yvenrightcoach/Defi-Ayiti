@@ -31,6 +31,27 @@ class User(AbstractUser):
         return self.username
 
 
+LEVEL_XP_BASE = 100
+LEVEL_XP_STEP = 50
+
+
+def xp_required_for_level(level: int) -> int:
+    """XP total cumule pour atteindre `level`. Chaque niveau exige LEVEL_XP_STEP
+    de plus que le precedent (100, 150, 200, 250...), donc grimper de niveau
+    devient volontairement plus long a mesure que le joueur progresse."""
+    if level <= 1:
+        return 0
+    n = level - 1
+    return LEVEL_XP_BASE * n + (LEVEL_XP_STEP * n * (n - 1)) // 2
+
+
+def level_for_xp(xp: int) -> int:
+    level = 1
+    while xp >= xp_required_for_level(level + 1):
+        level += 1
+    return level
+
+
 class League(models.TextChoices):
     BRONZE = "bronze", "Bronze"
     SILVER = "silver", "Argent"
@@ -80,11 +101,18 @@ class UserProfile(BaseModel):
     def __str__(self) -> str:
         return f"Profil de {self.user.username}"
 
+    @property
+    def xp_into_level(self) -> int:
+        return self.xp - xp_required_for_level(self.level)
+
+    @property
+    def xp_for_next_level(self) -> int:
+        return xp_required_for_level(self.level + 1) - xp_required_for_level(self.level)
+
     def add_xp(self, amount: int) -> None:
-        """Ajoute de l'XP et fait monter de niveau si le seuil (100 XP/niveau) est atteint."""
+        """Ajoute de l'XP et fait monter de niveau selon le seuil croissant (voir level_for_xp)."""
         self.xp += amount
-        xp_per_level = 100
-        self.level = max(1, self.xp // xp_per_level + 1)
+        self.level = level_for_xp(self.xp)
         self.save(update_fields=["xp", "level"])
         if amount > 0:
             # Import tardif : evite une dependance circulaire au chargement des apps.

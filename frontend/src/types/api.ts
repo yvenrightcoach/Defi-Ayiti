@@ -32,6 +32,8 @@ export interface UserProfile {
   department_detail: Department | null;
   level: number;
   xp: number;
+  xp_into_level: number;
+  xp_for_next_level: number;
   points: number;
   trophies: number;
   coins: number;

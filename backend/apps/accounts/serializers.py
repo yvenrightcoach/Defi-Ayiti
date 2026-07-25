@@ -35,11 +35,14 @@ class UserProfileSerializer(serializers.ModelSerializer):
     department_detail = DepartmentSerializer(source="department", read_only=True)
     avatar_hero = AvatarHeroSerializer(read_only=True)
 
+    xp_into_level = serializers.IntegerField(read_only=True)
+    xp_for_next_level = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = UserProfile
         fields = (
             "id", "user", "avatar_url", "avatar_hero", "active_frame", "department", "department_detail",
-            "level", "xp", "points", "trophies", "coins", "diamonds",
+            "level", "xp", "xp_into_level", "xp_for_next_level", "points", "trophies", "coins", "diamonds",
             "league", "win_streak", "best_win_streak", "created_at",
         )
         read_only_fields = (

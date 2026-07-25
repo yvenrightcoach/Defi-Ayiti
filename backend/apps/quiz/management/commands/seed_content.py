@@ -248,7 +248,7 @@ HEROES = [
         "quote": "",
         "rarity": "legendary",
         "order": 11,
-        "unlock_level": 22,
+        "unlock_level": 35,
         "local_image": "dutty-boukman.jpg",
     },
     {
@@ -262,7 +262,7 @@ HEROES = [
         "quote": "",
         "rarity": "epic",
         "order": 12,
-        "unlock_level": 14,
+        "unlock_level": 20,
         "local_image": "cecile-fatiman.jpg",
     },
     {
@@ -277,7 +277,7 @@ HEROES = [
         "quote": "",
         "rarity": "epic",
         "order": 13,
-        "unlock_level": 14,
+        "unlock_level": 20,
         "image": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Vincent_Og%C3%A9_by_Gilles-Louis_Chr%C3%A9tien.jpg",
     },
     {
@@ -291,7 +291,7 @@ HEROES = [
         "quote": "",
         "rarity": "rare",
         "order": 14,
-        "unlock_level": 6,
+        "unlock_level": 10,
         "image": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Jean-Baptiste_Chavannes_by_J._Verschueren.jpg",
     },
     {
@@ -308,7 +308,7 @@ HEROES = [
         "quote": "",
         "rarity": "rare",
         "order": 15,
-        "unlock_level": 6,
+        "unlock_level": 10,
         "local_image": "nicolas-geffrard.jpg",
     },
     {
@@ -322,7 +322,7 @@ HEROES = [
         "quote": "",
         "rarity": "rare",
         "order": 16,
-        "unlock_level": 6,
+        "unlock_level": 10,
         "local_image": "justin-lherisson.jpg",
     },
     {
@@ -379,7 +379,7 @@ HEROES = [
         "quote": "",
         "rarity": "legendary",
         "order": 20,
-        "unlock_level": 22,
+        "unlock_level": 35,
         "image": "https://upload.wikimedia.org/wikipedia/commons/1/1c/Jovenel_Moise.jpg",
     },
 
@@ -429,7 +429,7 @@ HEROES = [
         "quote": "",
         "rarity": "rare",
         "order": 23,
-        "unlock_level": 6,
+        "unlock_level": 10,
         "image": "https://upload.wikimedia.org/wikipedia/commons/9/9c/Jacques_Roumain.jpg",
     },
     {
@@ -443,7 +443,7 @@ HEROES = [
         "quote": "",
         "rarity": "rare",
         "order": 24,
-        "unlock_level": 6,
+        "unlock_level": 10,
         "image": "https://upload.wikimedia.org/wikipedia/commons/4/4b/Faustin_Soulouque.jpg",
     },
     {
@@ -457,7 +457,7 @@ HEROES = [
         "quote": "",
         "rarity": "rare",
         "order": 25,
-        "unlock_level": 6,
+        "unlock_level": 10,
         "image": "https://upload.wikimedia.org/wikipedia/commons/a/ad/Fabre_Geffrard%2C_pr%C3%A9sident_d%27Ha%C3%AFti.jpg",
     },
     {
@@ -471,7 +471,7 @@ HEROES = [
         "quote": "",
         "rarity": "rare",
         "order": 26,
-        "unlock_level": 6,
+        "unlock_level": 10,
         # Aucune photo librement diffusable d'elle n'existe (la seule connue
         # est sous droits, "fair use" Wikipedia uniquement) : ce dessin
         # (2023, licence libre) est la representation la plus fiable
@@ -489,7 +489,7 @@ HEROES = [
         "quote": "",
         "rarity": "epic",
         "order": 27,
-        "unlock_level": 14,
+        "unlock_level": 20,
         "image": "https://upload.wikimedia.org/wikipedia/commons/a/ab/Antenor_Firmin.jpg",
     },
     {
@@ -503,7 +503,7 @@ HEROES = [
         "quote": "",
         "rarity": "epic",
         "order": 28,
-        "unlock_level": 14,
+        "unlock_level": 20,
         "local_image": "benoit-batraville.jpg",
     },
     {
@@ -517,7 +517,7 @@ HEROES = [
         "quote": "",
         "rarity": "epic",
         "order": 29,
-        "unlock_level": 14,
+        "unlock_level": 20,
         "image": "https://upload.wikimedia.org/wikipedia/commons/7/79/Dumarsais_estime_portrait.jpg",
     },
     {
@@ -531,7 +531,7 @@ HEROES = [
         "quote": "",
         "rarity": "legendary",
         "order": 30,
-        "unlock_level": 22,
+        "unlock_level": 35,
         "image": "https://upload.wikimedia.org/wikipedia/commons/5/53/Jean_Laposte_2.jpg",
     },
 ]
@@ -1528,13 +1528,18 @@ class Command(BaseCommand):
             level.required_score = LEVEL_REQUIRED_SCORE
             level.is_boss_level = True
             level.unlocks_hero = heroes.get(level_data["hero"])
-            # Mise en pieces croissante avec l'avancement sur la carte : reste
-            # abordable au debut (100 pieces de depart) mais rend les derniers
-            # departements plus couteux a tenter, sans jamais depasser ce
-            # qu'un joueur regulier peut regagner en une ou deux victoires.
-            level.stake_cost = 20 + (department.order - 1) * 5
+            # Mise minimale de 50 pieces, croissante avec l'avancement sur la
+            # carte : les derniers departements coutent nettement plus cher a
+            # tenter. La victoire double la mise (remboursee + recompense
+            # egale au montant mise, voir complete_level), donc l'enjeu reste
+            # toujours proportionnel a ce que le joueur vient de risquer.
+            level.stake_cost = 50 + (department.order - 1) * 10
+            level.coin_reward = level.stake_cost
             level.save(
-                update_fields=["question_count", "required_score", "is_boss_level", "unlocks_hero", "stake_cost"]
+                update_fields=[
+                    "question_count", "required_score", "is_boss_level", "unlocks_hero",
+                    "stake_cost", "coin_reward",
+                ]
             )
 
             question_count += self._seed_questions(

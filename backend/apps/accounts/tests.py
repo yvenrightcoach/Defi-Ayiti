@@ -7,7 +7,7 @@ from django.core.management import call_command
 from django.urls import reverse
 from django.utils import timezone
 
-from apps.accounts.models import User, UserProfile
+from apps.accounts.models import User, UserProfile, level_for_xp, xp_required_for_level
 from apps.heroes.models import Hero, HeroCard
 
 
@@ -19,6 +19,39 @@ class TestUserProfileSignal:
         assert profile.coins == 100
         assert profile.level == 1
         assert profile.league == "bronze"
+
+
+class TestLevelingCurve:
+    """Le seuil d'XP par niveau augmente a chaque niveau (100, 150, 200...),
+    pour que monter de niveau devienne volontairement plus long avec le temps."""
+
+    @pytest.mark.parametrize(
+        "level,expected_cumulative_xp",
+        [(1, 0), (2, 100), (3, 250), (4, 450), (5, 700)],
+    )
+    def test_xp_required_for_level_grows_each_level(self, level, expected_cumulative_xp):
+        assert xp_required_for_level(level) == expected_cumulative_xp
+
+    @pytest.mark.parametrize(
+        "xp,expected_level",
+        [(0, 1), (99, 1), (100, 2), (249, 2), (250, 3), (449, 3), (450, 4)],
+    )
+    def test_level_for_xp_matches_thresholds(self, xp, expected_level):
+        assert level_for_xp(xp) == expected_level
+
+
+@pytest.mark.django_db
+class TestAddXp:
+    def test_add_xp_levels_up_and_exposes_progress_into_current_level(self, auth_client):
+        _, profile = auth_client
+
+        profile.add_xp(120)
+
+        profile.refresh_from_db()
+        assert profile.xp == 120
+        assert profile.level == 2
+        assert profile.xp_into_level == 20  # 120 - 100 (seuil du niveau 2)
+        assert profile.xp_for_next_level == 150  # niveau 3 exige 250 XP cumules, soit 150 de plus
 
 
 @pytest.mark.django_db

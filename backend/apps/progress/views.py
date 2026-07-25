@@ -23,12 +23,14 @@ from .serializers import (
 
 # Chance (par chapitre reussi) de recevoir en bonus un heros non lie a un
 # chapitre precis. Verifiees de la plus rare a la plus commune : un heros
-# legendaire reste volontairement difficile a obtenir.
+# legendaire reste volontairement tres difficile a obtenir, et meme un
+# commun n'est pas garanti a chaque victoire (aucun heros bonus la majorite
+# du temps), pour que la collection reste un objectif long-terme.
 BONUS_HERO_DROP_RATES = {
-    "legendary": 0.05,
-    "epic": 0.15,
-    "rare": 0.30,
-    "common": 0.60,
+    "legendary": 0.02,
+    "epic": 0.08,
+    "rare": 0.18,
+    "common": 0.35,
 }
 
 

@@ -32,7 +32,8 @@ export default function HomePage() {
     return <Loader label="Chargement de ton profil..." />;
   }
 
-  const xpIntoLevel = (profile?.xp ?? 0) % 100;
+  const xpIntoLevel = profile?.xp_into_level ?? 0;
+  const xpForNextLevel = profile?.xp_for_next_level ?? 100;
 
   return (
     <div className="min-h-screen p-4">
@@ -45,10 +46,13 @@ export default function HomePage() {
         <h1 className="text-2xl font-display">{profile?.user.username ?? "Joueur"}</h1>
         <div className="mt-3 flex items-center justify-between text-sm">
           <span>Niveau {profile?.level ?? 1}</span>
-          <span>{xpIntoLevel}/100 XP</span>
+          <span>{xpIntoLevel}/{xpForNextLevel} XP</span>
         </div>
         <div className="mt-1 h-2 overflow-hidden rounded-pill bg-white/20">
-          <div className="h-full rounded-pill bg-haiti-yellow" style={{ width: `${xpIntoLevel}%` }} />
+          <div
+            className="h-full rounded-pill bg-haiti-yellow"
+            style={{ width: `${xpForNextLevel ? Math.min(100, Math.round((xpIntoLevel / xpForNextLevel) * 100)) : 100}%` }}
+          />
         </div>
         <div className="mt-4 flex justify-between text-center text-sm">
           <div>

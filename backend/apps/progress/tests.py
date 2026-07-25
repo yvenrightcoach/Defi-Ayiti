@@ -228,6 +228,26 @@ class TestStakeLevel:
         progress = PlayerProgress.objects.get(profile=profile, department=level.department)
         assert progress.pending_stake == 0
 
+    def test_winning_with_coin_reward_equal_to_stake_doubles_the_stake(self, auth_client, department_with_level):
+        """Reproduit la mise en place cote seed_content (coin_reward == stake_cost) :
+        gagner doit rendre exactement le double de ce qui a ete mise."""
+        client, profile = auth_client
+        _, level, _ = department_with_level
+        level.stake_cost = 50
+        level.coin_reward = 50
+        level.required_score = 70
+        level.save(update_fields=["stake_cost", "coin_reward", "required_score"])
+        client.post("/api/v1/progress/entries/stake-level/", {"level_id": str(level.id)})
+
+        response = client.post(
+            "/api/v1/progress/entries/complete-level/", {"level_id": str(level.id), "score_percent": 80}
+        )
+
+        assert response.data["stake_refunded"] == 50
+        assert response.data["coin_awarded"] == 50
+        profile.refresh_from_db()
+        assert profile.coins == 100 + 50  # depart (100) - mise (50) + double (100) = 100 + 50 net
+
     def test_losing_a_staked_level_forfeits_the_stake(self, auth_client, department_with_level):
         client, profile = auth_client
         _, level, _ = department_with_level
