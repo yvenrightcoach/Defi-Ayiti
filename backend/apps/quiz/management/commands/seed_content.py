@@ -300,12 +300,16 @@ HEROES = [
         "biography": (
             "Musicien haitien, il compose en 1903 la musique de 'La "
             "Dessalinienne', qui devient l'hymne national d'Haiti en 1904, sur "
-            "des paroles de Justin Lherisson."
+            "des paroles de Justin Lherisson. Aucune photo de lui n'est "
+            "connue : le portrait affiche ici est en realite celui du general "
+            "Nicolas Geffrard (1761-1806), un homonyme sans lien de parente "
+            "directe connu."
         ),
         "quote": "",
         "rarity": "rare",
         "order": 15,
         "unlock_level": 6,
+        "local_image": "nicolas-geffrard.jpg",
     },
     {
         "slug": "justin-lherisson",
@@ -500,6 +504,7 @@ HEROES = [
         "rarity": "epic",
         "order": 28,
         "unlock_level": 14,
+        "local_image": "benoit-batraville.jpg",
     },
     {
         "slug": "dumarsais-estime",
