@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import ErrorMessage from "@/components/ui/ErrorMessage";
-import HeroPortrait from "@/components/ui/HeroPortrait";
+import HeroFace from "@/components/ui/HeroFace";
 import Loader from "@/components/ui/Loader";
-import { getHeroLook } from "@/data/heroPortraits";
 import { getErrorMessage } from "@/lib/errors";
 import { setAvatarHero } from "@/services/endpoints/auth";
 import { listHeroes } from "@/services/endpoints/heroes";
@@ -120,7 +119,7 @@ export default function HeroesPage() {
               onClick={(e) => e.stopPropagation()}
               className="card-game max-w-sm text-center"
             >
-              <HeroPortrait look={getHeroLook(selected.slug)} rarity={selected.rarity} className="mx-auto h-28 w-28" />
+              <HeroFace hero={selected} className="mx-auto h-28 w-28" />
               <h2 className="mt-2 text-xl font-display text-haiti-blue">{selected.name}</h2>
               <span className={`mt-1 inline-block rounded-pill px-2 py-0.5 text-xs font-display ${RARITY_STYLES[selected.rarity].badge}`}>
                 {RARITY_STYLES[selected.rarity].label}
@@ -191,12 +190,7 @@ function HeroSection({
                   : "border-slate-100 hover:-translate-y-0.5"
               }`}
             >
-              <HeroPortrait
-                look={getHeroLook(hero.slug)}
-                rarity={hero.rarity}
-                locked={!hero.is_unlocked}
-                className="h-16 w-16"
-              />
+              <HeroFace hero={hero} locked={!hero.is_unlocked} className="h-16 w-16" />
               <span className="font-display text-sm text-haiti-blue">{hero.name}</span>
               <span className={`rounded-pill px-2 py-0.5 text-xs font-display ${rarity.badge}`}>{rarity.label}</span>
               {!hero.is_unlocked && !hero.department && (

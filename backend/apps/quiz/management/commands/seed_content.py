@@ -98,6 +98,7 @@ HEROES = [
         "rarity": "legendary",
         "order": 1,
         "department": "nord-est",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/2/23/Portrait_de_Toussaint_Louverture%2C_%C3%A0_cheval1.jpg",
     },
     {
         "slug": "jean-jacques-dessalines",
@@ -112,6 +113,7 @@ HEROES = [
         "rarity": "legendary",
         "order": 2,
         "department": "artibonite",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/e/e7/Jean_Jacques_Dessalines.jpg",
     },
     {
         "slug": "henri-christophe",
@@ -125,6 +127,7 @@ HEROES = [
         "rarity": "epic",
         "order": 3,
         "department": "nord",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Henri_Christophe.jpg",
     },
     {
         "slug": "alexandre-petion",
@@ -138,6 +141,7 @@ HEROES = [
         "rarity": "epic",
         "order": 4,
         "department": "grand-anse",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/e/e9/Portrait_du_pr%C3%A9sident_Alexandre_P%C3%A9tion.jpg",
     },
     {
         "slug": "catherine-flon",
@@ -165,6 +169,7 @@ HEROES = [
         "rarity": "rare",
         "order": 6,
         "department": "nord-ouest",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/5/51/Fran%C3%A7ois_Capois_dit_Capois-la-Mort.jpg",
     },
     {
         "slug": "charlemagne-peralte",
@@ -178,6 +183,7 @@ HEROES = [
         "rarity": "epic",
         "order": 7,
         "department": "centre",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Charlemagne_P%C3%A9ralte.jpg",
     },
     {
         "slug": "anacaona",
@@ -217,6 +223,7 @@ HEROES = [
         "rarity": "rare",
         "order": 10,
         "department": "nippes",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Timbre_ha%C3%AFtien_de_50_centimes_de_gourdes.jpg",
     },
 
     # --- Heros bonus : pas lies a un chapitre precis, obtenus au hasard
@@ -262,6 +269,7 @@ HEROES = [
         "rarity": "epic",
         "order": 13,
         "unlock_level": 14,
+        "image": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Vincent_Og%C3%A9_by_Gilles-Louis_Chr%C3%A9tien.jpg",
     },
     {
         "slug": "jean-baptiste-chavannes",
@@ -275,6 +283,7 @@ HEROES = [
         "rarity": "rare",
         "order": 14,
         "unlock_level": 6,
+        "image": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Jean-Baptiste_Chavannes_by_J._Verschueren.jpg",
     },
     {
         "slug": "nicolas-geffrard",
@@ -314,6 +323,7 @@ HEROES = [
         "rarity": "common",
         "order": 17,
         "unlock_level": 1,
+        "image": "https://upload.wikimedia.org/wikipedia/commons/6/69/O._Durand.jpg",
     },
     {
         "slug": "jean-price-mars",
@@ -328,6 +338,7 @@ HEROES = [
         "rarity": "common",
         "order": 18,
         "unlock_level": 1,
+        "image": "https://upload.wikimedia.org/wikipedia/commons/6/67/Jean_Price-Mars.jpg",
     },
     {
         "slug": "nemours-jean-baptiste",
@@ -354,6 +365,7 @@ HEROES = [
         "rarity": "legendary",
         "order": 20,
         "unlock_level": 22,
+        "image": "https://upload.wikimedia.org/wikipedia/commons/1/1c/Jovenel_Moise.jpg",
     },
 
     # --- Deuxieme vague de heros bonus : enrichit l'echelle de progression
@@ -386,6 +398,7 @@ HEROES = [
         "rarity": "common",
         "order": 22,
         "unlock_level": 1,
+        "image": "https://upload.wikimedia.org/wikipedia/commons/3/31/Stenio_Vincent_portrait.jpg",
     },
     {
         "slug": "jacques-roumain",
@@ -399,6 +412,7 @@ HEROES = [
         "rarity": "rare",
         "order": 23,
         "unlock_level": 6,
+        "image": "https://upload.wikimedia.org/wikipedia/commons/9/9c/Jacques_Roumain.jpg",
     },
     {
         "slug": "faustin-soulouque",
@@ -412,6 +426,7 @@ HEROES = [
         "rarity": "rare",
         "order": 24,
         "unlock_level": 6,
+        "image": "https://upload.wikimedia.org/wikipedia/commons/4/4b/Faustin_Soulouque.jpg",
     },
     {
         "slug": "fabre-geffrard",
@@ -425,6 +440,7 @@ HEROES = [
         "rarity": "rare",
         "order": 25,
         "unlock_level": 6,
+        "image": "https://upload.wikimedia.org/wikipedia/commons/a/ad/Fabre_Geffrard%2C_pr%C3%A9sident_d%27Ha%C3%AFti.jpg",
     },
     {
         "slug": "marie-vieux-chauvet",
@@ -451,6 +467,7 @@ HEROES = [
         "rarity": "epic",
         "order": 27,
         "unlock_level": 14,
+        "image": "https://upload.wikimedia.org/wikipedia/commons/a/ab/Antenor_Firmin.jpg",
     },
     {
         "slug": "benoit-batraville",
@@ -477,6 +494,7 @@ HEROES = [
         "rarity": "epic",
         "order": 29,
         "unlock_level": 14,
+        "image": "https://upload.wikimedia.org/wikipedia/commons/7/79/Dumarsais_estime_portrait.jpg",
     },
     {
         "slug": "franketienne",
@@ -490,6 +508,7 @@ HEROES = [
         "rarity": "legendary",
         "order": 30,
         "unlock_level": 22,
+        "image": "https://upload.wikimedia.org/wikipedia/commons/5/53/Jean_Laposte_2.jpg",
     },
 ]
 
@@ -1534,13 +1553,17 @@ class Command(BaseCommand):
                 },
             )
             # Applique a chaque run (pas seulement a la creation) : permet de
-            # brancher retroactivement le departement (heros de chapitre) et
-            # le palier de niveau requis (heros bonus, echelle de progression)
-            # sur des heros deja semes avant l'ajout de ces champs.
+            # brancher retroactivement le departement (heros de chapitre), le
+            # palier de niveau requis (heros bonus, echelle de progression) et
+            # le portrait historique reel sur des heros deja semes avant
+            # l'ajout de ces champs. Pas de portrait fiable pour tous les
+            # heros (voir recherche dediee) : "image" reste vide dans ce cas,
+            # le frontend affiche alors un portrait cartoon de secours.
             department_slug = data.get("department")
             hero.department = Department.objects.filter(slug=department_slug).first() if department_slug else None
             hero.unlock_level = data.get("unlock_level", 1)
-            hero.save(update_fields=["department", "unlock_level"])
+            hero.image = data.get("image", "")
+            hero.save(update_fields=["department", "unlock_level", "image"])
             heroes[data["slug"]] = hero
         return heroes
 

@@ -24,7 +24,7 @@ class AvatarHeroSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Hero
-        fields = ("id", "name", "slug", "rarity")
+        fields = ("id", "name", "slug", "image", "rarity")
         read_only_fields = fields
 
 
