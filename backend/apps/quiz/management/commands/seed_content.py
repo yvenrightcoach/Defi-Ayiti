@@ -8,6 +8,7 @@ Usage : python manage.py seed_content
 """
 import random
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from apps.geography.models import Department, Level
@@ -155,6 +156,7 @@ HEROES = [
         "rarity": "rare",
         "order": 5,
         "department": "ouest",
+        "local_image": "catherine-flon.jpg",
     },
     {
         "slug": "capois-la-mort",
@@ -197,6 +199,7 @@ HEROES = [
         "rarity": "rare",
         "order": 8,
         "department": "sud",
+        "local_image": "anacaona.jpg",
     },
     {
         "slug": "sanite-belair",
@@ -246,6 +249,7 @@ HEROES = [
         "rarity": "legendary",
         "order": 11,
         "unlock_level": 22,
+        "local_image": "dutty-boukman.jpg",
     },
     {
         "slug": "cecile-fatiman",
@@ -259,6 +263,7 @@ HEROES = [
         "rarity": "epic",
         "order": 12,
         "unlock_level": 14,
+        "local_image": "cecile-fatiman.jpg",
     },
     {
         "slug": "vincent-oge",
@@ -314,6 +319,7 @@ HEROES = [
         "rarity": "rare",
         "order": 16,
         "unlock_level": 6,
+        "local_image": "justin-lherisson.jpg",
     },
     {
         "slug": "oswald-durand",
@@ -356,6 +362,7 @@ HEROES = [
         "rarity": "common",
         "order": 19,
         "unlock_level": 1,
+        "local_image": "nemours-jean-baptiste.jpg",
     },
     {
         "slug": "jovenel-moise",
@@ -1574,7 +1581,13 @@ class Command(BaseCommand):
             department_slug = data.get("department")
             hero.department = Department.objects.filter(slug=department_slug).first() if department_slug else None
             hero.unlock_level = data.get("unlock_level", 1)
-            hero.image = data.get("image", "")
+            # "local_image" : fichier depose manuellement dans
+            # frontend/public/heroes/ (pas de licence libre trouvee en ligne
+            # pour ces heros -- image fournie et hebergee par l'equipe elle
+            # meme plutot qu'une source externe). "image" reste reserve aux
+            # URLs externes deja verifiees (Wikimedia Commons...).
+            local_image = data.get("local_image")
+            hero.image = f"{settings.FRONTEND_URL.rstrip('/')}/heroes/{local_image}" if local_image else data.get("image", "")
             hero.save(update_fields=["department", "unlock_level", "image"])
             heroes[data["slug"]] = hero
         return heroes
