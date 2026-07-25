@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Event, Leaderboard, Season
+from .models import Event, PeriodWinner, ScoreEvent, Season
 
 
 @admin.register(Season)
@@ -18,9 +18,17 @@ class EventAdmin(admin.ModelAdmin):
     autocomplete_fields = ("season", "reward")
 
 
-@admin.register(Leaderboard)
-class LeaderboardAdmin(admin.ModelAdmin):
-    list_display = ("scope", "period", "department", "season", "profile", "rank", "score")
-    list_filter = ("scope", "period", "department", "season")
+@admin.register(ScoreEvent)
+class ScoreEventAdmin(admin.ModelAdmin):
+    list_display = ("profile", "amount", "created_at")
+    list_filter = ("created_at",)
     search_fields = ("profile__user__username",)
-    autocomplete_fields = ("department", "season", "profile")
+    autocomplete_fields = ("profile",)
+
+
+@admin.register(PeriodWinner)
+class PeriodWinnerAdmin(admin.ModelAdmin):
+    list_display = ("period_key", "period", "profile", "score", "coins_awarded", "diamonds_awarded", "granted_at")
+    list_filter = ("period",)
+    search_fields = ("profile__user__username", "period_key")
+    autocomplete_fields = ("profile",)

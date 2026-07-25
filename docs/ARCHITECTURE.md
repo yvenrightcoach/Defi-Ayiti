@@ -105,7 +105,7 @@ Tous les modeles sont implementes et migres :
 | progress | `PlayerProgress` |
 | battles | `BattleRoom`, `Match`, `MatchParticipant` |
 | social | `Friend` |
-| competition | `Season`, `Event`, `Leaderboard` |
+| competition | `Season`, `Event`, `ScoreEvent`, `PeriodWinner` |
 | rewards | `Reward`, `Achievement`, `PlayerAchievement`, `Mission`, `PlayerMission`, `ShopItem`, `Purchase` |
 | notifications | `Notification` |
 
@@ -154,7 +154,7 @@ genere par drf-spectacular). Points notables :
 | `POST /battles/rooms/`, `.../join/`, `.../{id}/start/` | Creation de salle, jonction par code, lancement d'un match |
 | `POST /battles/matches/{id}/submit-score/`, `.../finish/` | Score par joueur, cloture avec calcul du gagnant (trophees, serie) |
 | `POST /social/friends/`, `.../accept/`, `.../decline/`, `.../friends/` | Systeme d'amis complet |
-| `GET /competition/leaderboards/?scope=...&period=...` | Classements (alimentes par Celery beat) |
+| `GET /competition/leaderboards/?scope=national\|friends&period=weekly\|monthly\|yearly` | Classement calcule en direct depuis `ScoreEvent` ; renvoie aussi la recompense du 1er et le vainqueur de la periode precedente |
 | `POST /rewards/player-missions/{id}/claim/` | Reclamation de la recompense d'une quete terminee |
 | `POST /rewards/purchases/` | Achat boutique (deduction pieces/diamants) |
 | `POST /notifications/notifications/{id}/mark-read/` | Marquage des notifications |
@@ -177,12 +177,33 @@ temps reel (minuteur partage, notifications de progression des adversaires).
 
 Definies dans `config/celery.py` :
 - reset des quetes quotidiennes (minuit) ;
-- calcul du classement hebdomadaire (lundi 00h05) ;
 - verification du statut des saisons (tous les jours a 1h).
 
-Les taches elles-memes (`apps.rewards.tasks`, `apps.competition.tasks`)
-restent a implementer (elles alimenteront le modele `Leaderboard`, deja
-consultable en lecture via l'API).
+La tache `apps.rewards.tasks.reset_daily_missions` reste a implementer. Le
+classement, lui, n'a plus besoin de tache planifiee : il est calcule en
+direct a chaque requete a partir de `ScoreEvent` (voir section
+"Classements" ci-dessous), ce qui contourne l'absence de Celery beat sur le
+plan gratuit Render.
+
+## Classements (national / amis, recompenses periodiques)
+
+Pas de table de classement precalculee : chaque appel a
+`GET /competition/leaderboards/` agrege `ScoreEvent` (un evenement horodate
+cree a chaque gain d'XP, voir `UserProfile.add_xp`) sur la fenetre de la
+periode demandee (semaine ISO, mois calendaire ou annee civile).
+
+- **Scope `national`** : tous les joueurs ayant marque des points sur la
+  periode, tries par score decroissant.
+- **Scope `friends`** : uniquement le joueur courant et ses amis confirmes
+  (`apps.social.services.get_accepted_friend_ids`), y compris ceux a 0 point.
+
+A chaque appel, la vue verifie aussi si la periode precedente (semaine,
+mois ou annee qui vient de se terminer) a deja un vainqueur enregistre
+(`PeriodWinner`) ; sinon elle calcule le 1er national de cette fenetre
+close et lui accorde des pieces/diamants (`PERIOD_REWARDS` dans
+`apps/competition/views.py`) -- cloture "paresseuse" au lieu d'une tache
+planifiee, `PeriodWinner` etant proteg par une contrainte d'unicite
+`(scope, period, period_key)` contre un double versement.
 
 ## Notes techniques
 
@@ -263,7 +284,7 @@ Pages connectees a l'API (plus plus de donnees factices) :
 | QuizPage | `/quiz`, `/quiz/level/:levelId` | Questions -> soumission -> XP -> ecran de fin (deblocage de heros + confettis si chapitre boss) |
 | ProfilePage | `/profil` | Stats completes, badge de ligue, deconnexion |
 | HeroesPage | `/heros` | Collection avec etats verrouille/debloque + fiche heros |
-| LeaderboardPage | `/classements` | Filtres scope (national/departement/amis) x periode |
+| LeaderboardPage | `/classements` | Filtres scope (national/amis) x periode, bandeau recompense + vainqueur precedent |
 | FriendsPage | `/amis` | Recherche par pseudo, demandes, liste d'amis |
 | BattlePage | `/battle` | Creation/jonction de salle par code, lancement de match, quiz synchronise par polling, cloture avec classement |
 

@@ -238,21 +238,35 @@ export interface EventItem {
   is_active: boolean;
 }
 
-export type LeaderboardScope = "national" | "department" | "friends";
-export type LeaderboardPeriod = "weekly" | "monthly" | "yearly" | "season" | "all_time";
+export type LeaderboardScope = "national" | "friends";
+export type LeaderboardPeriod = "weekly" | "monthly" | "yearly";
 
 export interface LeaderboardEntry {
-  id: string;
-  scope: LeaderboardScope;
-  period: LeaderboardPeriod;
-  department: string | null;
-  season: string | null;
+  rank: number;
   profile: UserProfile;
   score: number;
-  rank: number;
+}
+
+export interface LeaderboardReward {
+  coins: number;
+  diamonds: number;
+}
+
+export interface LeaderboardPreviousWinner {
+  username: string;
+  score: number;
+  period_key: string;
+}
+
+export interface LeaderboardResponse {
+  scope: LeaderboardScope;
+  period: LeaderboardPeriod;
   period_start: string;
   period_end: string;
-  generated_at: string;
+  entries: LeaderboardEntry[];
+  my_rank: number | null;
+  reward: LeaderboardReward;
+  previous_winner: LeaderboardPreviousWinner | null;
 }
 
 export interface Reward {

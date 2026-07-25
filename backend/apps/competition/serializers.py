@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from apps.accounts.serializers import UserProfileSerializer
 
-from .models import Event, Leaderboard, Season
+from .models import Event, Season
 
 
 class SeasonSerializer(serializers.ModelSerializer):
@@ -24,13 +24,29 @@ class EventSerializer(serializers.ModelSerializer):
         )
 
 
-class LeaderboardSerializer(serializers.ModelSerializer):
-    profile = UserProfileSerializer(read_only=True)
+class LeaderboardRowSerializer(serializers.Serializer):
+    rank = serializers.IntegerField()
+    profile = UserProfileSerializer()
+    score = serializers.IntegerField()
 
-    class Meta:
-        model = Leaderboard
-        fields = (
-            "id", "scope", "period", "department", "season", "profile",
-            "score", "rank", "period_start", "period_end", "generated_at",
-        )
-        read_only_fields = fields
+
+class LeaderboardRewardSerializer(serializers.Serializer):
+    coins = serializers.IntegerField()
+    diamonds = serializers.IntegerField()
+
+
+class PeriodWinnerSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    score = serializers.IntegerField()
+    period_key = serializers.CharField()
+
+
+class LeaderboardResponseSerializer(serializers.Serializer):
+    scope = serializers.CharField()
+    period = serializers.CharField()
+    period_start = serializers.DateTimeField()
+    period_end = serializers.DateTimeField()
+    entries = LeaderboardRowSerializer(many=True)
+    my_rank = serializers.IntegerField(allow_null=True)
+    reward = LeaderboardRewardSerializer()
+    previous_winner = PeriodWinnerSerializer(allow_null=True)

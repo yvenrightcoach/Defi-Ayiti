@@ -11,6 +11,7 @@ from apps.accounts.serializers import UserProfileSerializer
 
 from .models import Friend, FriendStatus
 from .serializers import CreateFriendRequestSerializer, FriendSerializer
+from .services import get_accepted_friend_ids
 
 
 class FriendViewSet(viewsets.ModelViewSet):
@@ -77,8 +78,6 @@ class FriendViewSet(viewsets.ModelViewSet):
     def friends(self, request):
         """Liste des amis confirmes (l'autre profil de chaque amitie acceptee)."""
         profile = UserProfile.objects.filter(user=request.user).first()
-        accepted = Friend.objects.filter(
-            Q(requester=profile) | Q(addressee=profile), status=FriendStatus.ACCEPTED
-        ).select_related("requester__user", "addressee__user")
-        friend_profiles = [f.addressee if f.requester_id == profile.id else f.requester for f in accepted]
+        friend_ids = get_accepted_friend_ids(profile)
+        friend_profiles = UserProfile.objects.filter(id__in=friend_ids).select_related("user")
         return Response(UserProfileSerializer(friend_profiles, many=True).data)

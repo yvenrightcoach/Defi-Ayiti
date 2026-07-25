@@ -8,8 +8,8 @@ app_name = "competition"
 router = DefaultRouter()
 router.register("seasons", views.SeasonViewSet, basename="season")
 router.register("events", views.EventViewSet, basename="event")
-router.register("leaderboards", views.LeaderboardViewSet, basename="leaderboard")
 
 urlpatterns = [
+    path("leaderboards/", views.LeaderboardView.as_view(), name="leaderboard"),
     path("", include(router.urls)),
 ]

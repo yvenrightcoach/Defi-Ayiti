@@ -15,10 +15,6 @@ app.conf.beat_schedule = {
         "task": "apps.rewards.tasks.reset_daily_missions",
         "schedule": crontab(hour=0, minute=0),
     },
-    "compute-weekly-leaderboard": {
-        "task": "apps.competition.tasks.compute_weekly_leaderboard",
-        "schedule": crontab(hour=0, minute=5, day_of_week="monday"),
-    },
     "check-season-status": {
         "task": "apps.competition.tasks.check_season_status",
         "schedule": crontab(hour=1, minute=0),

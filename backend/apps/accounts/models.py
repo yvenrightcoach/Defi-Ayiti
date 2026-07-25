@@ -78,3 +78,8 @@ class UserProfile(BaseModel):
         xp_per_level = 100
         self.level = max(1, self.xp // xp_per_level + 1)
         self.save(update_fields=["xp", "level"])
+        if amount > 0:
+            # Import tardif : evite une dependance circulaire au chargement des apps.
+            from apps.competition.models import ScoreEvent
+
+            ScoreEvent.objects.create(profile=self, amount=amount)
