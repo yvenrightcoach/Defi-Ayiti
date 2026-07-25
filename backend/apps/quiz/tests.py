@@ -56,6 +56,21 @@ class TestSubmitAnswer:
         profile.refresh_from_db()
         assert profile.xp == 0
 
+    def test_empty_answer_ids_counts_as_incorrect(self, auth_client, question_with_answers):
+        """Le front envoie une liste vide quand le minuteur de question expire sans selection."""
+        client, profile = auth_client
+        question, correct, _ = question_with_answers
+        response = client.post(
+            f"/api/v1/quiz/questions/{question.id}/submit/", {"answer_ids": []}, format="json"
+        )
+        assert response.status_code == 200
+        assert response.data["is_correct"] is False
+        assert response.data["xp_awarded"] == 0
+        assert response.data["correct_answer_ids"] == [str(correct.id)]
+
+        profile.refresh_from_db()
+        assert profile.xp == 0
+
     def test_correct_answer_progresses_daily_mission(self, auth_client, question_with_answers):
         client, profile = auth_client
         question, correct, _ = question_with_answers

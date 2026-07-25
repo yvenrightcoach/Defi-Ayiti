@@ -35,9 +35,14 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 
 class SubmitAnswerSerializer(serializers.Serializer):
-    """Payload de soumission de reponse : un ou plusieurs ids de reponse selectionnes."""
+    """
+    Payload de soumission de reponse : ids de reponse selectionnes.
+    Liste vide autorisee : c'est ce qu'envoie le front quand le minuteur de
+    question expire sans qu'aucune reponse n'ait ete choisie (traite comme
+    une reponse fausse, comme n'importe quel ensemble de reponses errone).
+    """
 
-    answer_ids = serializers.ListField(child=serializers.UUIDField(), allow_empty=False)
+    answer_ids = serializers.ListField(child=serializers.UUIDField(), allow_empty=True)
 
 
 class AnswerResultSerializer(serializers.Serializer):

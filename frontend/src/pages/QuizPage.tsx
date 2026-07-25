@@ -16,6 +16,8 @@ import { listQuestionSession, submitAnswer } from "@/services/endpoints/quiz";
 import { useProfileStore } from "@/store/profileStore";
 import type { AnswerResult, CompleteLevelResult, Question } from "@/types/api";
 
+const QUESTION_TIME_LIMIT = 5;
+
 export default function QuizPage() {
   const { levelId } = useParams<{ levelId?: string }>();
   const navigate = useNavigate();
@@ -32,6 +34,7 @@ export default function QuizPage() {
   const [error, setError] = useState<string | null>(null);
   const [levelResult, setLevelResult] = useState<CompleteLevelResult | null>(null);
   const [finished, setFinished] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(QUESTION_TIME_LIMIT);
 
   useEffect(() => {
     async function load() {
@@ -63,8 +66,27 @@ export default function QuizPage() {
     }
   }
 
+  // Minuteur de 5 secondes par question : repart a chaque nouvelle question,
+  // se fige des qu'une reponse est validee (manuellement ou par expiration).
+  useEffect(() => {
+    if (!currentQuestion || result || isSubmitting) return;
+    setTimeLeft(QUESTION_TIME_LIMIT);
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => (prev <= 1 ? 0 : prev - 1));
+    }, 1000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentQuestion?.id, result, isSubmitting]);
+
+  useEffect(() => {
+    if (timeLeft === 0 && !result && !isSubmitting) {
+      void handleValidate();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeLeft]);
+
   async function handleValidate() {
-    if (!currentQuestion || selectedIds.length === 0) return;
+    if (!currentQuestion || result || isSubmitting) return;
     setIsSubmitting(true);
     try {
       const res = await submitAnswer(currentQuestion.id, selectedIds);
@@ -141,6 +163,23 @@ export default function QuizPage() {
           animate={{ width: `${((index + (result ? 1 : 0)) / questions.length) * 100}%` }}
           transition={{ type: "spring", stiffness: 200, damping: 25 }}
         />
+      </div>
+
+      <div className="mb-3 flex items-center gap-2">
+        <span
+          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-display text-sm text-white transition-colors ${
+            timeLeft <= 2 ? "bg-haiti-red" : "bg-haiti-blue"
+          }`}
+        >
+          {timeLeft}
+        </span>
+        <div className="h-2 flex-1 overflow-hidden rounded-pill bg-slate-100">
+          <motion.div
+            className={`h-full rounded-pill ${timeLeft <= 2 ? "bg-haiti-red" : "bg-haiti-yellow"}`}
+            animate={{ width: `${(timeLeft / QUESTION_TIME_LIMIT) * 100}%` }}
+            transition={{ duration: 0.9, ease: "linear" }}
+          />
+        </div>
       </div>
 
       <AnimatePresence mode="wait">
