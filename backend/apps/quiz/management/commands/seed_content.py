@@ -156,7 +156,7 @@ HEROES = [
         "rarity": "rare",
         "order": 5,
         "department": "ouest",
-        "local_image": "catherine-flon.jpg",
+        "local_image": "catherine-flon.webp",
     },
     {
         "slug": "capois-la-mort",
