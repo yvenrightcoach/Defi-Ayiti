@@ -210,6 +210,10 @@ HEROES = [
         "rarity": "rare",
         "order": 9,
         "department": "sud-est",
+        # Aucun portrait d'epoque connu : image reprise du billet de 10
+        # gourdes (gravure officielle utilisee par la Banque de la
+        # Republique d'Haiti), la representation la plus repandue d'elle.
+        "image": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Sanit%C3%A9_Belair.jpg",
     },
     {
         "slug": "marie-jeanne-lamartiniere",
@@ -379,12 +383,15 @@ HEROES = [
             "Epouse de Jean-Jacques Dessalines et premiere imperatrice d'Haiti, "
             "elle reste dans la memoire collective pour avoir plaide la "
             "clemence envers des colons francais menaces de represailles apres "
-            "l'independance."
+            "l'independance. Aucun portrait d'elle n'a survecu : le visage "
+            "propose ici est une representation artistique imaginee, pas un "
+            "portrait d'epoque."
         ),
         "quote": "",
         "rarity": "common",
         "order": 21,
         "unlock_level": 1,
+        "image": "https://upload.wikimedia.org/wikipedia/commons/f/f7/Imp%C3%A9ratrice_Marie_Claire_F%C3%A9licite_Bonheur_Dessalines.jpg",
     },
     {
         "slug": "stenio-vincent",
