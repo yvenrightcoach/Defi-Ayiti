@@ -44,3 +44,9 @@ supabase==2.9.1
 
 # --- Paiements (achats de packs de diamants) ---
 stripe==15.3.1
+
+# --- Envoi d'emails transactionnels (Brevo, API HTTP) ---
+# Prefere a l'envoi SMTP classique : les plateformes d'hebergement gratuites
+# (Render...) bloquent parfois les ports sortants 587/465, alors que le port
+# 443 (HTTPS, utilise ici) est toujours ouvert.
+django-anymail==15.0

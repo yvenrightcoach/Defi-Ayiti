@@ -31,13 +31,20 @@ if render_hostname:
     ALLOWED_HOSTS.append(render_hostname)  # noqa: F405
     CSRF_TRUSTED_ORIGINS.append(f"https://{render_hostname}")  # noqa: F405
 
-# Sans fournisseur SMTP configure (EMAIL_HOST vide), utiliser le backend
-# reel ferait planter chaque inscription/reinitialisation de mot de passe
-# (tentative de connexion a un hote vide). On bascule sur un backend "dummy"
-# qui ignore silencieusement les emails tant qu'un service (SendGrid,
-# Mailgun...) n'est pas branche.
+# Trois niveaux, du plus prefere au filet de secours :
+# 1) Brevo via API HTTP (port 443) -- fonctionne meme quand l'hebergeur
+#    bloque les ports SMTP sortants (587/465), ce qui arrive sur Render.
+# 2) SMTP classique, si un hote est fourni (autre fournisseur, ou Brevo en
+#    SMTP si son port n'est pas bloque chez toi).
+# 3) Backend "dummy" : sans rien de configure, ignore silencieusement les
+#    emails plutot que de planter chaque inscription/reinitialisation.
+BREVO_API_KEY = env("BREVO_API_KEY", default="")
 EMAIL_HOST = env("EMAIL_HOST", default="")
-if EMAIL_HOST:
+
+if BREVO_API_KEY:
+    EMAIL_BACKEND = "anymail.backends.brevo.EmailBackend"
+    ANYMAIL = {"BREVO_API_KEY": BREVO_API_KEY}
+elif EMAIL_HOST:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_PORT = env.int("EMAIL_PORT", default=587)
     EMAIL_USE_TLS = True
