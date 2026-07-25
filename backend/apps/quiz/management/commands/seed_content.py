@@ -454,6 +454,11 @@ HEROES = [
         "rarity": "rare",
         "order": 26,
         "unlock_level": 6,
+        # Aucune photo librement diffusable d'elle n'existe (la seule connue
+        # est sous droits, "fair use" Wikipedia uniquement) : ce dessin
+        # (2023, licence libre) est la representation la plus fiable
+        # disponible, utilisee par Wikipedia elle-meme faute de photo.
+        "image": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Marie_Vieux_Chauvet.jpg",
     },
     {
         "slug": "antenor-firmin",
